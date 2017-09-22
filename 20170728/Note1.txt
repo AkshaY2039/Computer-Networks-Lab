@@ -1,0 +1,28 @@
+Configuring Interface
+ifconfig -a
+ifconfig eth0
+ifconfig eth0 <IP>
+ifconfig eth0 [down/up]
+
+Adding a route or default gateway
+route add <default gw/route_name> <IP>
+route -n
+route del <route name/IP>
+
+trace route --->gives detail of the path to reach the destination.
+
+DNS resolution
+/etc/resolv.conf --->where DNS server is located?
+nameserver IP_for_DNS
+nslookup [IP/nameserver]
+
+Network Testing
+1. find ur gateway ip and PING that gw IP (to confirm if network adapter works fine) (reachable)
+2. then ping the nameserver IP address to confirm that gw is configured properly. (i.e. reachable to the public network/internet)
+3. now try pinging any host using its name to confirm that the DNS(nameserver) configurtion is correct.
+
+wireshark tool ---> captures network traffic.. read its User Guide Documentation and install it
+network sniffing
+
+difference b/w HTTP and HTTPS,FTP and SFTP
+TelNet,RLogin

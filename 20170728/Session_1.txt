@@ -1,0 +1,340 @@
+Script started on Friday 04 August 2017 07:10:12 PM IST
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m [K]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig -a
+enp2s0    Link encap:Ethernet  HWaddr c8:5b:76:6a:5e:1b  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:661 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:661 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:42260 (42.2 KB)  TX bytes:42260 (42.2 KB)
+
+wlp3s0    Link encap:Ethernet  HWaddr 2c:6e:85:ae:6c:da  
+          inet addr:172.16.12.41  Bcast:172.16.255.255  Mask:255.255.0.0
+          inet6 addr: fe80::8693:d4de:63cd:b3c1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:7816 errors:0 dropped:1 overruns:0 frame:0
+          TX packets:3475 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5544050 (5.5 MB)  TX bytes:620982 (620.9 KB)
+
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0
+wlp3s0    Link encap:Ethernet  HWaddr 2c:6e:85:ae:6c:da  
+          inet addr:172.16.12.41  Bcast:172.16.255.255  Mask:255.255.0.0
+          inet6 addr: fe80::8693:d4de:63cd:b3c1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:7816 errors:0 dropped:1 overruns:0 frame:0
+          TX packets:3475 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5544050 (5.5 MB)  TX bytes:620982 (620.9 KB)
+
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0 172.16.1.1
+SIOCSIFADDR: Operation not permitted
+SIOCSIFFLAGS: Operation not permitted
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m sudo ifconfig o[Kwlp3s0 172.16.1.1
+[sudo] password for akshay: 
+Sorry, try again.
+[sudo] password for akshay: 
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m sudo ifconfig wlp3s0 172.16.1.1[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+SIOCSIFADDR: Operation not permitted
+SIOCSIFFLAGS: Operation not permitted
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0 172.16.1.1[5@sudo [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
+wlp3s0    Link encap:Ethernet  HWaddr 2c:6e:85:ae:6c:da  
+          inet addr:172.16.1.1  Bcast:172.16.255.255  Mask:255.255.0.0
+          inet6 addr: fe80::8693:d4de:63cd:b3c1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:7853 errors:0 dropped:1 overruns:0 frame:0
+          TX packets:3490 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5548185 (5.5 MB)  TX bytes:623323 (623.3 KB)
+
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0 172.16.1.1[5@sudo [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[K[K[Kdown
+SIOCSIFFLAGS: Operation not permitted
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0 down[1@s[1@u[1@d[1@o[1@ 
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m sudo ifconfig wlp3s0 down[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
+wlp3s0    Link encap:Ethernet  HWaddr 2c:6e:85:ae:6c:da  
+          inet addr:172.16.1.1  Bcast:172.16.255.255  Mask:255.255.0.0
+          BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:7864 errors:0 dropped:1 overruns:0 frame:0
+          TX packets:3491 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5548934 (5.5 MB)  TX bytes:623430 (623.4 KB)
+
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0sudo ifconfig wlp3s0 down[K[K[K[Kup
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m sudo ifconfig wlp3s0 up[8Pifconfig wlp3s0sudo ifconfig wlp3s0 down[10Pifconfig wlp3s0sudo ifconfig wlp3s0 down[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K 172.16.1.1[K[K[K12.41
+SIOCSIFADDR: Operation not permitted
+SIOCSIFFLAGS: Operation not permitted
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ifconfig wlp3s0 172.16.12.41[1@s[1@u[1@d[1@o[1@ 
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m cat /etc/resolv.conf 
+# Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)
+#     DO NOT EDIT THIS FILE BY HAND -- YOUR CHANGES WILL BE OVERWRITTEN
+nameserver 127.0.1.1
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.16.255.250  0.0.0.0         UG    600    0        0 wlp3s0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1000   0        0 wlp3s0
+172.16.0.0      0.0.0.0         255.255.0.0     U     600    0        0 wlp3s0
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m traceroute
+Usage:
+  traceroute [ -46dFITnreAUDV ] [ -f first_ttl ] [ -g gate,... ] [ -i device ] [ -m max_ttl ] [ -N squeries ] [ -p port ] [ -t tos ] [ -l flow_label ] [ -w waittime ] [ -q nqueries ] [ -s src_addr ] [ -z sendwait ] [ --fwmark=num ] host [ packetlen ]
+Options:
+  -4                          Use IPv4
+  -6                          Use IPv6
+  -d  --debug                 Enable socket level debugging
+  -F  --dont-fragment         Do not fragment packets
+  -f first_ttl  --first=first_ttl
+                              Start from the first_ttl hop (instead from 1)
+  -g gate,...  --gateway=gate,...
+                              Route packets through the specified gateway
+                              (maximum 8 for IPv4 and 127 for IPv6)
+  -I  --icmp                  Use ICMP ECHO for tracerouting
+  -T  --tcp                   Use TCP SYN for tracerouting (default port is 80)
+  -i device  --interface=device
+                              Specify a network interface to operate with
+  -m max_ttl  --max-hops=max_ttl
+                              Set the max number of hops (max TTL to be
+                              reached). Default is 30
+  -N squeries  --sim-queries=squeries
+                              Set the number of probes to be tried
+                              simultaneously (default is 16)
+  -n                          Do not resolve IP addresses to their domain names
+  -p port  --port=port        Set the destination port to use. It is either
+                              initial udp port value for "default" method
+                              (incremented by each probe, default is 33434), or
+                              initial seq for "icmp" (incremented as well,
+                              default from 1), or some constant destination
+                              port for other methods (with default of 80 for
+                              "tcp", 53 for "udp", etc.)
+  -t tos  --tos=tos           Set the TOS (IPv4 type of service) or TC (IPv6
+                              traffic class) value for outgoing packets
+  -l flow_label  --flowlabel=flow_label
+                              Use specified flow_label for IPv6 packets
+  -w waittime  --wait=waittime
+                              Set the number of seconds to wait for response to
+                              a probe (default is 5.0). Non-integer (float
+                              point) values allowed too
+  -q nqueries  --queries=nqueries
+                              Set the number of probes per each hop. Default is
+                              3
+  -r                          Bypass the normal routing and send directly to a
+                              host on an attached network
+  -s src_addr  --source=src_addr
+                              Use source src_addr for outgoing packets
+  -z sendwait  --sendwait=sendwait
+                              Minimal time interval between probes (default 0).
+                              If the value is more than 10, then it specifies a
+                              number in milliseconds, else it is a number of
+                              seconds (float point values allowed too)
+  -e  --extensions            Show ICMP extensions (if present), including MPLS
+  -A  --as-path-lookups       Perform AS path lookups in routing registries and
+                              print results directly after the corresponding
+                              addresses
+  -M name  --module=name      Use specified module (either builtin or external)
+                              for traceroute operations. Most methods have
+                              their shortcuts (`-I' means `-M icmp' etc.)
+  -O OPTS,...  --options=OPTS,...
+                              Use module-specific option OPTS for the
+                              traceroute module. Several OPTS allowed,
+                              separated by comma. If OPTS is "help", print info
+                              about available options
+  --sport=num                 Use source port num for outgoing packets. Implies
+                              `-N 1'
+  --fwmark=num                Set firewall mark for outgoing packets
+  -U  --udp                   Use UDP to particular port for tracerouting
+                              (instead of increasing the port per each probe),
+                              default port is 53
+  -UL                         Use UDPLITE for tracerouting (default dest port
+                              is 53)
+  -D  --dccp                  Use DCCP Request for tracerouting (default port
+                              is 33434)
+  -P prot  --protocol=prot    Use raw packet of protocol prot for tracerouting
+  --mtu                       Discover MTU along the path being traced. Implies
+                              `-F -N 1'
+  --back                      Guess the number of hops in the backward path and
+                              print if it differs
+  -V  --version               Print version info and exit
+  --help                      Read this help and exit
+
+Arguments:
++     host          The host to traceroute to
+      packetlen     The full packet length (default is the length of an IP
+                    header plus 40). Can be ignored or increased to a minimal
+                    allowed value
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m traceroute google.com
+traceroute to google.com (172.217.26.174), 30 hops max, 60 byte packets
+ 1  172.16.255.250 (172.16.255.250)  10.886 ms  10.867 ms  10.941 ms
+ 2  192.168.2.1 (192.168.2.1)  11.171 ms  11.033 ms  11.253 ms
+ 3  14.139.187.97 (14.139.187.97)  11.309 ms  11.403 ms  11.499 ms
+ 4  10.119.236.173 (10.119.236.173)  12.265 ms  11.997 ms  12.295 ms
+ 5  10.163.251.49 (10.163.251.49)  13.801 ms  13.799 ms  13.786 ms
+ 6  10.119.73.122 (10.119.73.122)  13.773 ms  3.338 ms  3.810 ms
+ 7  72.14.195.128 (72.14.195.128)  3.614 ms  4.139 ms  5.151 ms
+ 8  72.14.233.204 (72.14.233.204)  5.008 ms  5.543 ms  6.066 ms
+ 9  108.170.237.61 (108.170.237.61)  5.711 ms  6.238 ms  7.295 ms
+10  maa03s22-in-f14.1e100.net (172.217.26.174)  7.935 ms  8.132 ms  8.252 ms
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m traceroute google.com[1P.com[1P.com[1P.com[1P.com[1P.com[1P.com[1Pcom[1Pom[1Pm[Kiiitdm.ac.in
+traceroute to iiitdm.ac.in (64.111.105.105), 30 hops max, 60 byte packets
+ 1  172.16.255.250 (172.16.255.250)  1.701 ms  2.053 ms  2.255 ms
+ 2  192.168.2.1 (192.168.2.1)  2.138 ms  3.451 ms  3.804 ms
+ 3  14.139.187.97 (14.139.187.97)  5.646 ms  5.728 ms  6.366 ms
+ 4  10.119.236.173 (10.119.236.173)  5.570 ms  6.883 ms  7.043 ms
+ 5  10.163.251.49 (10.163.251.49)  7.836 ms  8.703 ms  12.560 ms
+ 6  10.119.73.122 (10.119.73.122)  12.565 ms  3.412 ms  3.569 ms
+ 7  182.19.35.190 (182.19.35.190)  31.219 ms  31.417 ms  31.821 ms
+ 8  182.19.106.105 (182.19.106.105)  29.389 ms  29.443 ms  29.672 ms
+ 9  xe-8-3-2.mlu.cw.net (195.89.101.185)  273.782 ms  273.882 ms  274.133 ms
+10  ae6-xcr1.fix.cw.net (195.2.10.245)  275.311 ms  275.565 ms  275.870 ms
+11  ae14.mpr1.fra4.us.zip.zayo.com (64.125.13.101)  274.551 ms  274.745 ms  275.076 ms
+12  ae8.mpr1.fra3.de.zip.zayo.com (64.125.26.233)  271.534 ms  247.489 ms  247.439 ms
+13  ae27.cs1.fra6.de.eth.zayo.com (64.125.31.216)  247.291 ms  312.398 ms  303.392 ms
+14  ae2.cs1.ams17.nl.eth.zayo.com (64.125.29.59)  303.338 ms  303.311 ms  303.318 ms
+15  ae0.cs1.ams10.nl.eth.zayo.com (64.125.29.80)  303.163 ms  303.111 ms  303.090 ms
+16  ae2.cs1.lhr15.uk.eth.zayo.com (64.125.29.17)  303.077 ms  303.065 ms  303.053 ms
+17  ae5.cs1.dca2.us.eth.zayo.com (64.125.29.131)  306.423 ms  306.411 ms  306.381 ms
+18  ae27.cr1.dca2.us.zip.zayo.com (64.125.30.247)  303.218 ms ae0.cs2.dca2.us.eth.zayo.com (64.125.29.229)  306.319 ms ae27.cr1.dca2.us.zip.zayo.com (64.125.30.247)  304.936 ms
+19  ae27.cr2.dca2.us.zip.zayo.com (64.125.30.249)  312.415 ms ae15.er4.iad10.us.zip.zayo.com (64.125.31.22)  311.012 ms  311.862 ms
+20  ae16.er5.iad10.us.zip.zayo.com (64.125.31.77)  310.093 ms  310.983 ms  311.165 ms
+21  208.185.23.134.t00867-03.above.net (208.185.23.134)  297.102 ms  297.293 ms  297.549 ms
+22  ip-208-113-156-4.dreamhost.com (208.113.156.4)  297.761 ms  297.893 ms  313.617 ms
+23  ip-208-113-156-14.dreamhost.com (208.113.156.14)  312.568 ms  311.327 ms  309.870 ms
+24  ps568917.dreamhost.com (64.111.105.105)  302.465 ms  303.261 ms  303.841 ms
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m nameserver 64.111.105[K[K[K105.105
+nameserver: command not found
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ns lookup 64.111.105.105
+The program 'ns' is currently not installed. You can install it by typing:
+sudo apt install ns2
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ns lookup 64.111.105.105[C[C[1P
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+105.105.111.64.in-addr.arpa	name = ps568917.dreamhost.com.
+
+Authoritative answers can be found from:
+
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m nslookup 64.111.105.105[K[K[K[K[K[K[K[K[K[K[K[K[K[Kgoogle.com
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	google.com
+Address: 216.58.220.46
+
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m nslookup google.com[Knslookup
+> amazon.in
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	amazon.in
+Address: 54.239.34.40
+Name:	amazon.in
+Address: 54.239.32.8
+Name:	amazon.in
+Address: 178.236.7.18
+> flipkart.com
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	flipkart.com
+Address: 163.53.78.128
+> iiitdm.ac.in
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	iiitdm.ac.in
+Address: 64.111.105.105
+> mail.google.com
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+mail.google.com	canonical name = googlemail.l.google.com.
+Name:	googlemail.l.google.com
+Address: 172.217.26.197
+> msn.com
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	msn.com
+Address: 13.82.28.61
+> abc.xyz
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	abc.xyz
+Address: 216.58.197.46
+> apple.x com
+Server:		127.0.1.1
+Address:	127.0.1.1#53
+
+Non-authoritative answer:
+Name:	apple.com
+Address: 17.172.224.47
+Name:	apple.com
+Address: 17.142.160.59
+Name:	apple.com
+Address: 17.178.96.59
+> ^C]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.16.255.250  0.0.0.0         UG    600    0        0 wlp3s0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1000   0        0 wlp3s0
+172.16.0.0      0.0.0.0         255.255.0.0     U     600    0        0 wlp3s0
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ping 127[K[K72.16.255.250
+PING 172.16.255.250 (172.16.255.250) 56(84) bytes of data.
+64 bytes from 172.16.255.250: icmp_seq=1 ttl=64 time=2.39 ms
+64 bytes from 172.16.255.250: icmp_seq=2 ttl=64 time=2.50 ms
+64 bytes from 172.16.255.250: icmp_seq=3 ttl=64 time=2.46 ms
+64 bytes from 172.16.255.250: icmp_seq=4 ttl=64 time=2.27 ms
+64 bytes from 172.16.255.250: icmp_seq=5 ttl=64 time=2.51 ms
+64 bytes from 172.16.255.250: icmp_seq=6 ttl=64 time=2.29 ms
+^C
+--- 172.16.255.250 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 5008ms
+rtt min/avg/max/mdev = 2.276/2.410/2.519/0.095 ms
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ping 172.16.255.250[K[K[K[K[K[K[K[K[K[K[K[K[K27.01[K.1.1
+PING 127.0.1.1 (127.0.1.1) 56(84) bytes of data.
+64 bytes from 127.0.1.1: icmp_seq=1 ttl=64 time=0.017 ms
+64 bytes from 127.0.1.1: icmp_seq=2 ttl=64 time=0.047 ms
+64 bytes from 127.0.1.1: icmp_seq=3 ttl=64 time=0.024 ms
+64 bytes from 127.0.1.1: icmp_seq=4 ttl=64 time=0.037 ms
+^X64 bytes from 127.0.1.1: icmp_seq=5 ttl=64 time=0.023 ms
+64 bytes from 127.0.1.1: icmp_seq=6 ttl=64 time=0.024 ms
+^C
+--- 127.0.1.1 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 5122ms
+rtt min/avg/max/mdev = 0.017/0.028/0.047/0.011 ms
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m ping 127.0.1.1[K[K[K[K[K[K[K[K[Kgooglr.com[K[K[K[K[Ke.com
+PING google.com (216.58.197.46) 56(84) bytes of data.
+64 bytes from 216.58.197.46: icmp_seq=1 ttl=55 time=4.86 ms
+64 bytes from 216.58.197.46: icmp_seq=2 ttl=55 time=7.91 ms
+64 bytes from 216.58.197.46: icmp_seq=3 ttl=55 time=5.00 ms
+64 bytes from 216.58.197.46: icmp_seq=4 ttl=55 time=4.91 ms
+64 bytes from 216.58.197.46: icmp_seq=5 ttl=55 time=4.43 ms
+64 bytes from 216.58.197.46: icmp_seq=6 ttl=55 time=3.34 ms
+64 bytes from 216.58.197.46: icmp_seq=7 ttl=55 time=4.44 ms
+64 bytes from 216.58.197.46: icmp_seq=8 ttl=55 time=3.70 ms
+64 bytes from 216.58.197.46: icmp_seq=9 ttl=55 time=3.43 ms
+64 bytes from 216.58.197.46: icmp_seq=10 ttl=55 time=3.99 ms
+64 bytes from 216.58.197.46: icmp_seq=11 ttl=55 time=5.80 ms
+^C
+--- google.com ping statistics ---
+11 packets transmitted, 11 received, 0% packet loss, time 19029ms
+rtt min/avg/max/mdev = 3.347/4.714/7.916/1.238 ms
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170728[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170728 $[00m exit
+exit
+
+Script done on Friday 04 August 2017 07:31:47 PM IST

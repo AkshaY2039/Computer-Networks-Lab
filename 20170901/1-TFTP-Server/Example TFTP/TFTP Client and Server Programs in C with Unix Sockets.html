@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040)https://jamesnorthway.net/tftp/tftp.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="description" content="An Experimental TFTP Client and Server in C">
+<title>TFTP Client and Server Programs in C with Unix Sockets</title>
+</head>
+<body>
+<h1>TFTP Client and Server Programs in C with Unix Sockets</h1>
+<p>Author: James Northway
+<br><i>james@jamesnorthway.net</i></p>
+
+<h2>Introduction</h2>
+<p>A <i>trivial</i> file transfer protocol serves the purpose of providing a simplified method of sharing data between machines that do not primarily offer file services to an open network. An example of a current case where such transfer is adopted is <a href="ftp://download.intel.com/design/archives/wfm/downloads/pxespec.pdf" title="Preboot Execution Environment Specification (PDF)">PXE</a> network booting, which transfers some data to network booted clients using an implementation of the Trivial File Transfer Protocol (<a href="http://tools.ietf.org/html/rfc783" title="The TFTP Protocol (Revision 2)">TFTP</a>). One key difference between TFTP and File Transfer Protocol (<a href="https://tools.ietf.org/html/rfc959" title="File Transer Protocol RFC 959">FTP</a>) is the lack of user authentication, meaning TFTP is generally only practical when access control to the service is provided by some other mechanism, such as access to the network on which it operates. Who or what can connect to a TFTP service is determined by the ability to connect a device to that network. A LAN in a controlled environment or a series of directly connected devices with no public interfaces can be candidates for TFTP applications.</p>
+<p>This report covers an implementation of the TFTP protocol as described in <a href="http://tools.ietf.org/html/rfc783" title="The TFTP Protocol (Revision 2)">RFC 783</a> using the concept of Finite State Machines. The project demonstrates such implementation in the C programming language for the GNU C Compiler. This report will include a review of the TFTP protocol and the design of the network application, including the client and server. Functionality of the program will be demonstrated, and tests conducted that may be replicated using the provided source code. The program is not feature complete or suitable for production use in its current form. As provided, it is only recommended that it be used for experimental, educational or review purposes.</p>
+
+<h2>Review of the Trivial File Transfer Protocol</h2>
+<p>The TFTP protocol, as prescribed in RFC 783 using a client-server paradigm, is described as operating over the User Datagram Protocol (<a href="http://tools.ietf.org/html/rfc768" title="User Datagram Protocol">UDP</a>). Although transport over UDP is not mandatory,  it means that the reliability of more feature complete protocols such as TCP is not assumed to be present, and this is addressed in the TFTP design. Two components of the protocol go towards reliability; packet sequence is tracked via a block number, and packets not acknowledged as received are resent until they could reasonably be expected to be acknowledged, in the absence of a frustrating factor such as a network fault.</p>
+<p>The initial connection protocol involves the server receiving a request packet from the client on a known port, stated as port 69 in the RFC. The server then replies on another randomly selected port which the client will send ACK or DATA packets to for the remainder of the transfer.</p>
+<p>The TFTP protocol has five packet types; read requests, write requests, data packets, acknowledgements and error packets. Each packet type has a corresponding action expected to be taken upon receipt, with the end result being the complete transfer of a file from one computer to another over the network.</p>
+<p>The following limitations apply in RFC 783; the maximum size of a data block is 512 bytes, block number is represented by a two byte unsigned integer. This means the maximum number of blocks that can be transferred is 65,535 and the maximum file size that can be transferred is 65,535 x 512 bytes, or about 32 megabytes.</p>
+<p>In detail, the packet types are as follows; Read and Write Request packets utilise the same structure and are sent to communicate that the client wishes to read a file from, or write a file to the server. The packet has a 2 byte operation code of 01 for a read, and 02 for a write request followed by; a file name, followed by a null byte, followed by a string denoting the transfer mode, terminated by a null byte.</p>
+<p>Data packets have an operation code of 03, followed by the block number, that is, the sequence in which the payload fits into the file transferred as a 2 byte integer, followed immediately by the data. Since 512 bytes of data are permissible, the packet size for a data packet is 516 bytes and that is the largest possible size for a TFTP packet.</p>
+<p>Acknowledgement packets have an operation code of 04, followed by a block number as a 2 byte integer. The block number is that of the block acknowledged as received. They are sent from the receiver of a data packet to the sender.
+Error packets contain an operation code of 05, followed by a 2 byte error code, followed by a string containing any applicable message terminated by a null byte. Fixed error codes are prescribed in the RFC but arbitrary error messages can be sent with a designation of code 0.</p>
+<p>The orders of operations are, for the most part, dictated by the packet received; a read request is sent the first data packet if the file can be sent or an error message if it cannot. An acknowledgement packet is sent the following data block in a data packet, which in turn receives another acknowledgement in response. From the client end, error packets received typically result in termination. The server, on receipt of an error packet, may terminate or return to a standby state depending on the application. For reliability, sent packets which do not receive the expected response packet, or an error packet in return, are resent by the sender.</p>
+<p>Although RFC 783 was used for this project, it should be noted that the TFTP was updated to revision two in 1992 with RFC <a href="http://tools.ietf.org/html/rfc1350" title="The TFTP Protocol (Revision 2)">1350</a>.</p>
+
+<h2>Design of the Network Application</h2>
+<p>The network application includes a client and server program. The server runs persistently and serves read and write requests, whereas the client executes a file read or write with a server and then terminates.  The client and server are designed to perform <code>get</code> and <code>put</code> transactions only.</p>
+<p>Both the client and server program are controlled by finite state machines with transitions set by a function in a module named fsm.c . The main programs of the server and client contain a switch control block within a while loop to call the function specific to the current state, followed by re-calling the state machine function in fsm.c . The loops only terminate when the state variable has been set to the value that denotes completion of the program.</p>
+
+<h3>Application Goals</h3>
+<p>The client and server should be interoperable with third party TFTP clients and servers which also adhere to RFC 783.</p>
+<p>The server will be able to perform multiple consecutive transfers with different hosts.</p>
+<p>The server will accept requests on a port specified by the user as a command line argument.</p>
+<p>The server will continue to operate and accept new transfers if a particular transfer cannot be completed. For example, the server will continue to operate if a requested file is not found or not writeable, or a transaction times out. If the error frustrates the server's ability to operate, for example, if it cannot create and bind to a socket, the server program will terminate.</p>
+
+<h3>Limitations of the Application</h3>
+<p>The client and server are to operate in octet mode only. This ensures that the file written to the remote file system is an exact copy of the original if all packets are sent and received correctly.</p>
+<p>The server is single threaded, and does not contain any concurrency or queuing measures. The application will employ no user or host authentication or in-built security or reliability measures beyond those inherent to TFTP.</p>
+<p>The client receives user input as command line arguments and will perform one transaction and then terminate.</p>
+
+<h3>The Server</h3>
+<p><img src="./TFTP Client and Server Programs in C with Unix Sockets_files/tftp_server_state_machine.png" alt="TFTP Server State Diagram" title="TFTP Server State Diagram">
+<br><b>Figure 1, Server States</b></p>
+<p>The server is controlled by a state machine, with four states; standby, receive, send and wait.</p>
+<p>In most operations of TFTP, all received packets require another packet to be immediately sent in return, as such, the server has a receive state, and moves to a send state immediately afterwards. Likewise, any packet sent will receive a reply, therefore the next state is the wait state, which is similar to the standby state but is specific to a <code>get</code> or <code>put</code> operation, and includes time out functionality. If a packet is received, the wait state proceeds to the receive state, but if the expected packet is not received within a set time limit, a timeout occurs and the wait state proceeds to the send state, where the content of the outgoing packet buffer is sent again.</p>
+<p>When the server starts, it enters the standby state and waits for connections. Once a connection and packet is received, it moves to the receive state. Depending on the operation code of the packet, the server will prepare the next packet to be sent while in the receive state, which on completion will proceed to the send state.</p>
+<p>If a read request packet is in the incoming packet buffer, a data packet is formed in the outgoing packet buffer. If an acknowledgement is in the incoming buffer, the next data block position in the file is calculated and a data packet is formed. If a write request is buffered, an acknowledgement packet is formed into the output buffer. Likewise, if a data packet has been received during a <code>put</code> transaction.  If any of these actions fail, an error packet is formed in the output buffer instead.</p>
+<p>The receive state can be summarised as follows:</p>
+<ol>
+    <li>The operation code bytes are read from the packet in the inbound buffer.</li>
+    <li>Depending on the operation code, a relevant function is called to extract the contents of the packet.</li>
+    <li>If the conditions are met for a new reply packet, it is formed in the output buffer using the variables containing the extracted data. Otherwise the previously formed packet will remain unchanged in the outgoing packet buffer.</li>
+    <li>The machine moves to the send state.</li>
+</ol>
+<p>The send state is much less complicated than the receive state, since the core logic of the program has already been applied. This state simply sends the contents of the output buffer to the client, whether that be a packet that was newly formed in the receive state, or the packet before that, which has remained in the buffer unchanged.  This simplicity is afforded by the TFTP protocol in that any event other than an error, repeated failure, or the receipt of the next packet in the protocol sequence, will result in the previous packet being resent.</p>
+<ol>
+    <li>The contents of the outgoing packet buffer are sent to the client.</li>
+    <li>The following state is either:
+        <ul>
+            <li>The wait state, so the response to the sent packet can be received.</li>
+            <li>The reset state when the last ACK of a <code>put</code> operation has been sent.</li>
+        </ul>
+    </li>
+</ol>
+<p>The wait state involves a blocking call to <code>recvfrom</code>, which will be interrupted by an alarm signal after one second, which will result in a timeout count being incremented. Within the timeout limit, the wait state will transition to the send state, where the previous packet will be resent, and then return to the wait state. When the limit is exceeded, the wait state will instead transition to the reset state, abandoning the current transaction and returning to the standby state.</p>
+<ol>
+    <li>The server waits for an incoming packet.</li>
+    <li>The packet is received or it times out, transitioning to:
+        <ul>
+            <li>The receive state, to parse the packet</li>
+            <li>The send state, to resend the last sent packet</li>
+            <li>The reset state after consecutive timeouts</li>
+        </ul>
+    </li>
+</ol>
+<p>The reset state closes any open files before transitioning to the standby state to await another transaction.  The server will not terminate unless an internal error which will repeat on subsequent transactions occurs. It will return to the standby state after each transaction is completed or abandoned.</p>
+
+<h3>The Client</h3>
+<p><img src="./TFTP Client and Server Programs in C with Unix Sockets_files/tftp_client_state_machine.png" alt="TFTP Client State Diagram" title="TFTP Client State Diagram">
+<br><b>Figure 2, Client States</b></p>
+<p>The client uses a subset of the server states utilising the same modules and functions. The client has the reset and standby states omitted due to termination at the completion or abandonment of a transaction. The client therefore has three states; send, wait and receive.  Unlike the server, the client will form a read or write request immediately upon being executed, without transitioning through the receive state first. After the initial packet to start the transaction, any other packets will be formed in the receive state. The client receives user input as command line arguments and does not wait for any input from the user while running.</p>
+<p>The client will continue the <code>Send -&gt; Wait -&gt; Receive</code> cycle until an error occurs, the timeout limit is exceeded in the wait state, the last acknowledgement for a <code>get</code> is sent, or the last acknowledgement for a <code>put</code> is received.  Once the transaction is completed or abandoned, the client will terminate.</p>
+
+<h2>Implementation</h2>
+<p>The application was written in ANSI C and compiled for testing with the GNU C Compiler on Debian Linux 6. It does not utilise any third party libraries, only those included with glibc.  A makefile is provided which will compile the 'client', the 'server' or both (all) if none specified. 'make clean' will delete any binaries previously created.</p>
+<p>There are four modules common to both the client and server programs: file.c, fsm.c, netudp.c and tftp.c . Functions in these files are shared between both the server and client programs that reside in <a href="https://jamesnorthway.net/tftp/tftp_src/tftp_server_c.txt" title="View server.c">server.c</a> and <a href="https://jamesnorthway.net/tftp/tftp_src/tftp_client_c.txt" title="View client.c">client.c</a>.  Each of the four files is accompanied by a header of the same name.</p>
+<p><a href="https://jamesnorthway.net/tftp/tftp_src/tftp_file_c.txt" title="View file.c">file.c</a> contains five functions for performing file operations on the local machine:</p>
+<ul>
+    <li>file_open_read: Opens a file in read only mode.</li>
+	<li>file_buffer_from_pos: Reads the maximum amount into the buffer from a given byte onwards</li>
+	<li>file_open_write: Opens a file for writing.</li>
+	<li>file_append_from_buffer: Writes the contents of the data buffer to the end of the open file.</li>
+	<li>file_close: Closes a file with the possibility of displaying an error.</li>
+</ul>
+<p><a href="https://jamesnorthway.net/tftp/tftp_src/tftp_fsm_c.txt" title="View fsm.c">fsm.c</a> contains two functions that form the finite state machines of the server and client:</p>
+<ul>
+    <li>server_fsm: Uses a nested switch structure for the basis of the server FSM. Two variables are used; state and operation. Operation is used to determine which state the program will transfer to next.</li>
+    <li>client_fsm: Uses a nested switch structure for the basis of the client FSM, again with state and operation cases nested.</li>
+</ul>
+<p><a href="https://jamesnorthway.net/tftp/tftp_src/tftp_netudp_c.txt" title="View netudp.c">netudp.c</a> contains four functions for network  actions:</p>
+<ul>
+    <li>netudp_bind_server: Creates and binds a socket for the server.</li>
+    <li>netudp_rebind_server: Creates and binds another socket for the current transfer.</li>
+    <li>netudp_bind_client: Creates and binds a socket for the client.</li>
+    <li>netudp_send_packet: Sends a packet buffered in its entirety to a given socket.</li>
+</ul>
+<p><a href="https://jamesnorthway.net/tftp/tftp_src/tftp_tftp_c.txt" title="View tftp.c">tftp.c</a> contains a number of functions, which fall into three categories:</p>
+<ul>
+	<li>packet_parse functions for parsing a particular packet type into a packet structure.</li>
+	<li>packet_receive functions for actioning, and responding to a particular packet type.</li>
+	<li>packet_form functions for forming a particular packet type in the outgoing buffer.</li>
+</ul>
+<p><a href="https://jamesnorthway.net/tftp/tftp_src/tftp_tftp_h.txt" title="View tftp.h">tftp.h</a> provides a packet struct for the current inbound or outbound packet, and also a transaction struct for storage of information pertaining to a current transfer.</p>
+<p>The client uses the same file.c, fsm.c, netudp.c and tftp.c modules as the server . However, any functions relating to actioning read and write requests are not used, since the client only sends these packet types and does not receive them.  The client only performs one transaction before completion; therefore most errors are actioned by termination of the program.</p>
+
+<h3>Demonstration of the Client and Server</h3>
+<p>The output of a test session is included below. The client and server programs are compiled using the make command and a text version of Herman Melville’s Moby Dick is transferred from the server to the client with <code>get</code>, and back with <code>put</code> under a different name. The server and client are two computers on the same LAN, with hostnames CSCsrv and CSCcli and IPs 192.168.115 &amp; 192.168.1.116 respectively.</p>
+
+<h4>Server Shell Output</h4>
+<pre>james@CSCsrv:~/servertest$ ls -l
+total 1292
+-rw-r--r-- 1 james james    5337 2013-08-29 22:28 client.c
+-rw-r--r-- 1 james james    1485 2013-08-29 22:30 file.c
+-rw-r--r-- 1 james james     340 2013-08-29 21:00 file.h
+-rw-r--r-- 1 james james    2840 2013-08-29 22:40 fsm.c
+-rw-r--r-- 1 james james     441 2013-08-29 22:40 fsm.h
+-rw-r--r-- 1 james james     251 2013-08-29 22:32 makefile
+-rw-r--r-- 1 james james 1255665 2013-08-30 18:02 mobydick.txt
+-rw-r--r-- 1 james james    2276 2013-08-29 22:30 netudp.c
+-rw-r--r-- 1 james james     344 2013-08-29 23:11 netudp.h
+-rw-r--r-- 1 james james    1006 2013-08-29 22:59 README
+-rw-r--r-- 1 james james    5286 2013-08-29 22:31 server.c
+-rw-r--r-- 1 james james    7415 2013-08-29 23:07 tftp.c
+-rw-r--r-- 1 james james    3606 2013-08-29 23:12 tftp.h
+
+james@CSCsrv:~/servertest$ make server
+gcc -ansi -Wall -D_POSIX_C_SOURCE server.c file.c fsm.c netudp.c tftp.c -o server
+
+james@CSCsrv:~/servertest$ ./server 3333
+
+
+***TFTP Server***
+Read request for mobydick.txt
+Transferred block: 2453
+
+***TFTP Server***
+Write request for mobydickcopy.txt
+Received block: 2453
+Done.
+
+
+***TFTP Server***
+^C
+james@CSCsrv:~/servertest$ ls -l
+total 2544
+-rw-r--r-- 1 james james    5337 2013-08-29 22:28 client.c
+-rw-r--r-- 1 james james    1485 2013-08-29 22:30 file.c
+-rw-r--r-- 1 james james     340 2013-08-29 21:00 file.h
+-rw-r--r-- 1 james james    2840 2013-08-29 22:40 fsm.c
+-rw-r--r-- 1 james james     441 2013-08-29 22:40 fsm.h
+-rw-r--r-- 1 james james     251 2013-08-29 22:32 makefile
+-rw-r--r-- 1 james james 1255665 2013-08-30 18:04 mobydickcopy.txt
+-rw-r--r-- 1 james james 1255665 2013-08-30 18:02 mobydick.txt
+-rw-r--r-- 1 james james    2276 2013-08-29 22:30 netudp.c
+-rw-r--r-- 1 james james     344 2013-08-29 23:11 netudp.h
+-rw-r--r-- 1 james james    1006 2013-08-29 22:59 README
+-rwxr-xr-x 1 james james   17067 2013-08-30 18:03 server
+-rw-r--r-- 1 james james    5286 2013-08-29 22:31 server.c
+-rw-r--r-- 1 james james    7415 2013-08-29 23:07 tftp.c
+-rw-r--r-- 1 james james    3606 2013-08-29 23:12 tftp.h
+james@CSCsrv:~/servertest$
+</pre>
+
+<h4>Client Shell Output</h4>
+<pre>james@CSCcli:~/clienttest$ ls -l
+total 60
+-rw-r--r-- 1 james james 5337 2013-08-29 22:28 client.c
+-rw-r--r-- 1 james james 1485 2013-08-29 22:30 file.c
+-rw-r--r-- 1 james james  340 2013-08-29 21:00 file.h
+-rw-r--r-- 1 james james 2840 2013-08-29 22:40 fsm.c
+-rw-r--r-- 1 james james  441 2013-08-29 22:40 fsm.h
+-rw-r--r-- 1 james james  251 2013-08-29 22:32 makefile
+-rw-r--r-- 1 james james 2276 2013-08-29 22:30 netudp.c
+-rw-r--r-- 1 james james  344 2013-08-29 23:11 netudp.h
+-rw-r--r-- 1 james james 1006 2013-08-29 22:59 README
+-rw-r--r-- 1 james james 5286 2013-08-29 22:31 server.c
+-rw-r--r-- 1 james james 7415 2013-08-29 23:07 tftp.c
+-rw-r--r-- 1 james james 3606 2013-08-29 23:12 tftp.h
+
+james@CSCcli:~/clienttest$ make client
+gcc -ansi -Wall -D_POSIX_C_SOURCE client.c file.c fsm.c netudp.c tftp.c -o client
+james@CSCcli:~/clienttest$ ./client 192.168.1.115 3333 mobydick.txt mobydickcopy.txt get
+Received block: 2453
+Transfer completed.
+
+james@CSCcli:~/clienttest$ ./client 192.168.1.115 3333 mobydickcopy.txt mobydickcopy.txt put
+Transferred block: 2453
+Transfer completed.
+
+james@CSCcli:~/clienttest$ ls -l
+total 1312
+-rwxr-xr-x 1 james james   17435 2013-08-30 18:07 client
+-rw-r--r-- 1 james james    5337 2013-08-29 22:28 client.c
+-rw-r--r-- 1 james james    1485 2013-08-29 22:30 file.c
+-rw-r--r-- 1 james james     340 2013-08-29 21:00 file.h
+-rw-r--r-- 1 james james    2840 2013-08-29 22:40 fsm.c
+-rw-r--r-- 1 james james     441 2013-08-29 22:40 fsm.h
+-rw-r--r-- 1 james james     251 2013-08-29 22:32 makefile
+-rw-r--r-- 1 james james 1255665 2013-08-30 18:08 mobydickcopy.txt
+-rw-r--r-- 1 james james    2276 2013-08-29 22:30 netudp.c
+-rw-r--r-- 1 james james     344 2013-08-29 23:11 netudp.h
+-rw-r--r-- 1 james james    1006 2013-08-29 22:59 README
+-rw-r--r-- 1 james james    5286 2013-08-29 22:31 server.c
+-rw-r--r-- 1 james james    7415 2013-08-29 23:07 tftp.c
+-rw-r--r-- 1 james james    3606 2013-08-29 23:12 tftp.h
+james@CSCcli:~/clienttest$
+</pre>
+
+<h3>Demonstration of the Server and a 3rd Party Client</h3>
+<p>The following test was conducted under the same conditions as the first, but using a TFTP client installed from the Debian repository; netkit-tftp-0.17.</p>
+<h4>Client Shell Output</h4>
+<pre>james@CSCcli:~/clienttest$ ls -l
+total 80
+-rwxr-xr-x 1 james james 17435 2013-08-30 18:07 client
+-rw-r--r-- 1 james james  5337 2013-08-29 22:28 client.c
+-rw-r--r-- 1 james james  1485 2013-08-29 22:30 file.c
+-rw-r--r-- 1 james james   340 2013-08-29 21:00 file.h
+-rw-r--r-- 1 james james  2840 2013-08-29 22:40 fsm.c
+-rw-r--r-- 1 james james   441 2013-08-29 22:40 fsm.h
+-rw-r--r-- 1 james james   251 2013-08-29 22:32 makefile
+-rw-r--r-- 1 james james  2276 2013-08-29 22:30 netudp.c
+-rw-r--r-- 1 james james   344 2013-08-29 23:11 netudp.h
+-rw-r--r-- 1 james james  1006 2013-08-29 22:59 README
+-rw-r--r-- 1 james james  5286 2013-08-29 22:31 server.c
+-rw-r--r-- 1 james james  7415 2013-08-29 23:07 tftp.c
+-rw-r--r-- 1 james james  3606 2013-08-29 23:12 tftp.h
+
+james@CSCcli:~/clienttest$ tftp
+tftp&gt; connect 192.168.1.115 3333
+tftp&gt; mode octet
+tftp&gt; get mobydick.txt
+Received 1255665 bytes in 0.9 seconds
+tftp&gt; q
+
+james@CSCcli:~/clienttest$ ls -l
+total 1312
+-rwxr-xr-x 1 james james   17435 2013-08-30 18:07 client
+-rw-r--r-- 1 james james    5337 2013-08-29 22:28 client.c
+-rw-r--r-- 1 james james    1485 2013-08-29 22:30 file.c
+-rw-r--r-- 1 james james     340 2013-08-29 21:00 file.h
+-rw-r--r-- 1 james james    2840 2013-08-29 22:40 fsm.c
+-rw-r--r-- 1 james james     441 2013-08-29 22:40 fsm.h
+-rw-r--r-- 1 james james     251 2013-08-29 22:32 makefile
+-rw-r--r-- 1 james james 1255665 2013-08-30 18:30 mobydick.txt
+-rw-r--r-- 1 james james    2276 2013-08-29 22:30 netudp.c
+-rw-r--r-- 1 james james     344 2013-08-29 23:11 netudp.h
+-rw-r--r-- 1 james james    1006 2013-08-29 22:59 README
+-rw-r--r-- 1 james james    5286 2013-08-29 22:31 server.c
+-rw-r--r-- 1 james james    7415 2013-08-29 23:07 tftp.c
+-rw-r--r-- 1 james james    3606 2013-08-29 23:12 tftp.h
+</pre>
+
+<h2>Experiment</h2>
+<p>This experiment was conducted on a local computer running both the client and server, and running the server on a remote machine over the internet.  The local computer is in QLD, Australia on a residential ADSL connection and the remote is located in Florida, USA with a 100Mbps port speed.</p>
+<p>The test involves transferring two files both ways, one a short text file of less than 512 bytes (one packet), and a large text file of 1.2MB. Once files are transferred, they will be checked by the <code>diff</code> command to verify they have been transferred in their entirety.  </p>
+<p>The following steps are undertaken to demonstrate multiple transfers of the same file using <code>get</code> and <code>put</code> to transfer it unaltered.</p>
+<ol>
+    <li>Read mobydick.txt from server to mobycopy.txt</li>
+    <li>Write mobycopy.txt to server</li>
+    <li>Read mobycopy.txt from server as mobycopy2.txt</li>
+    <li>Use <code>diff</code> to compare mobycopy2.txt to the original mobydick.txt on the server and client</li>
+</ol>
+<p>For the remote test, the original mobydick.txt file was transferred to the server via SSH first before being downloaded to the client for the first time. As expected due to the small packet size and acknowledgement per packet, the transfers were considerably slower over the internet at long distance, taking over 10 minutes to transfer the 1.2MB file, compared to just over 1 second on the local network.</p>
+
+<h3>Local Network Transfer Test Result</h3>
+<p>After completion, <code>diff</code> found no differences between mobycopy2.txt and mobydick.txt.  The small text file of less than one packet produced the same result.</p>
+
+<h3>Internet Transfer Test Result</h3>
+<p>After completion, <code>diff</code> found no differences between mobycopy2.txt and mobydick.txt.  The small text file of less than one packet produced the same result.</p>
+<p>Both the local and remote operation of the client and server was completed successfully in this case.</p>
+
+<h2>Conclusion</h2>
+<p>The project has resulted in an operable client and server program implementing the TFTP protocol from RFC 783.  The client and server programs were able to successfully transfer files on the local machine, the local area network, and over the Internet. Although not tested extensively, the client and server are able to complete transfers with 3rd party TFTP programs with consistency, which I believe indicates TFTP as per RFC 783 has been implemented in the programs adequately.</p>
+<p><i>Since there is no immediate need for another to-the-letter TFTP client and server for Unix derivatives; the benefits of the project reside in the demonstration of a finite state machine to control a TFTP client and server, and for my own educational ends, in which I have had an opportunity to practice utilising Unix Sockets, increase my understanding of network protocols, packet formation and parsing, as well as see some of the reliability and performance issues faced in network programming. Hopefully this work will help others do the same.</i></p>
+
+<h2>Links</h2>
+<p><a href="https://jamesnorthway.net/files/tftp/tftp_client_server-latest.tar.gz" title="Source Code - Licensed under an MIT License">TFTP Client and Server Source Tarball</a> <a href="https://jamesnorthway.net/tftp/tftp_src/License.txt" title="TFTP Client and Server Source Code MIT License"> MIT License</a></p>
+<p><a href="ftp://download.intel.com/design/archives/wfm/downloads/pxespec.pdf" title="Preboot Execution Environment Specification (PDF)">Preboot Execution Environment (PXE) Specification - PDF</a>
+<br><a href="https://tools.ietf.org/html/rfc959" title="File Transer Protocol RFC 959">File Transfer Protocol (FTP) RFC 959</a>
+<br><a href="http://tools.ietf.org/html/rfc783" title="RFC 783 The TFTP Protocol (Revision 2)">The TFTP Protocol (Revision 2) RFC 783</a>
+<br><a href="http://tools.ietf.org/html/rfc768" title="User Datagram Protocol RFC 768">User Datagram Protocol RFC 768</a>
+<br><a href="http://tools.ietf.org/html/rfc1350" title="The TFTP Protocol (Revision 2)">The TFTP Protocol (Revision 2) RFC 1350</a></p>
+
+<p>Copyright (c) 2013, 2014, 2015 James Northway.
+<br>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
+<br><i>Last revised 29/08/2015. james@jamesnorthway.net</i></p>
+
+
+
+<span style="border-radius: 3px; text-indent: 20px; width: auto; padding: 0px 4px 0px 0px; text-align: center; font-style: normal; font-variant: normal; font-weight: bold; font-stretch: normal; font-size: 11px; line-height: 20px; font-family: &quot;Helvetica Neue&quot;, Helvetica, sans-serif; color: rgb(255, 255, 255); background: url(&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMzBweCIgd2lkdGg9IjMwcHgiIHZpZXdCb3g9Ii0xIC0xIDMxIDMxIj48Zz48cGF0aCBkPSJNMjkuNDQ5LDE0LjY2MiBDMjkuNDQ5LDIyLjcyMiAyMi44NjgsMjkuMjU2IDE0Ljc1LDI5LjI1NiBDNi42MzIsMjkuMjU2IDAuMDUxLDIyLjcyMiAwLjA1MSwxNC42NjIgQzAuMDUxLDYuNjAxIDYuNjMyLDAuMDY3IDE0Ljc1LDAuMDY3IEMyMi44NjgsMC4wNjcgMjkuNDQ5LDYuNjAxIDI5LjQ0OSwxNC42NjIiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+PHBhdGggZD0iTTE0LjczMywxLjY4NiBDNy41MTYsMS42ODYgMS42NjUsNy40OTUgMS42NjUsMTQuNjYyIEMxLjY2NSwyMC4xNTkgNS4xMDksMjQuODU0IDkuOTcsMjYuNzQ0IEM5Ljg1NiwyNS43MTggOS43NTMsMjQuMTQzIDEwLjAxNiwyMy4wMjIgQzEwLjI1MywyMi4wMSAxMS41NDgsMTYuNTcyIDExLjU0OCwxNi41NzIgQzExLjU0OCwxNi41NzIgMTEuMTU3LDE1Ljc5NSAxMS4xNTcsMTQuNjQ2IEMxMS4xNTcsMTIuODQyIDEyLjIxMSwxMS40OTUgMTMuNTIyLDExLjQ5NSBDMTQuNjM3LDExLjQ5NSAxNS4xNzUsMTIuMzI2IDE1LjE3NSwxMy4zMjMgQzE1LjE3NSwxNC40MzYgMTQuNDYyLDE2LjEgMTQuMDkzLDE3LjY0MyBDMTMuNzg1LDE4LjkzNSAxNC43NDUsMTkuOTg4IDE2LjAyOCwxOS45ODggQzE4LjM1MSwxOS45ODggMjAuMTM2LDE3LjU1NiAyMC4xMzYsMTQuMDQ2IEMyMC4xMzYsMTAuOTM5IDE3Ljg4OCw4Ljc2NyAxNC42NzgsOC43NjcgQzEwLjk1OSw4Ljc2NyA4Ljc3NywxMS41MzYgOC43NzcsMTQuMzk4IEM4Ljc3NywxNS41MTMgOS4yMSwxNi43MDkgOS43NDksMTcuMzU5IEM5Ljg1NiwxNy40ODggOS44NzIsMTcuNiA5Ljg0LDE3LjczMSBDOS43NDEsMTguMTQxIDkuNTIsMTkuMDIzIDkuNDc3LDE5LjIwMyBDOS40MiwxOS40NCA5LjI4OCwxOS40OTEgOS4wNCwxOS4zNzYgQzcuNDA4LDE4LjYyMiA2LjM4NywxNi4yNTIgNi4zODcsMTQuMzQ5IEM2LjM4NywxMC4yNTYgOS4zODMsNi40OTcgMTUuMDIyLDYuNDk3IEMxOS41NTUsNi40OTcgMjMuMDc4LDkuNzA1IDIzLjA3OCwxMy45OTEgQzIzLjA3OCwxOC40NjMgMjAuMjM5LDIyLjA2MiAxNi4yOTcsMjIuMDYyIEMxNC45NzMsMjIuMDYyIDEzLjcyOCwyMS4zNzkgMTMuMzAyLDIwLjU3MiBDMTMuMzAyLDIwLjU3MiAxMi42NDcsMjMuMDUgMTIuNDg4LDIzLjY1NyBDMTIuMTkzLDI0Ljc4NCAxMS4zOTYsMjYuMTk2IDEwLjg2MywyNy4wNTggQzEyLjA4NiwyNy40MzQgMTMuMzg2LDI3LjYzNyAxNC43MzMsMjcuNjM3IEMyMS45NSwyNy42MzcgMjcuODAxLDIxLjgyOCAyNy44MDEsMTQuNjYyIEMyNy44MDEsNy40OTUgMjEuOTUsMS42ODYgMTQuNzMzLDEuNjg2IiBmaWxsPSIjYmQwODFjIj48L3BhdGg+PC9nPjwvc3ZnPg==&quot;) 3px 50% / 14px 14px no-repeat rgb(189, 8, 28); position: absolute; opacity: 1; z-index: 8675309; display: none; cursor: pointer; border: none; -webkit-font-smoothing: antialiased;">Save</span><span style="width: 24px; height: 24px; background: url(&quot;data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgd2lkdGg9IjI0cHgiIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxtYXNrIGlkPSJtIj48cmVjdCBmaWxsPSIjZmZmIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI2IiByeT0iNiIvPjxyZWN0IGZpbGw9IiMwMDAiIHg9IjUiIHk9IjUiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgcng9IjEiIHJ5PSIxIi8+PHJlY3QgZmlsbD0iIzAwMCIgeD0iMTAiIHk9IjAiIHdpZHRoPSI0IiBoZWlnaHQ9IjI0Ii8+PHJlY3QgZmlsbD0iIzAwMCIgeD0iMCIgeT0iMTAiIHdpZHRoPSIyNCIgaGVpZ2h0PSI0Ii8+PC9tYXNrPjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IiNmZmYiIG1hc2s9InVybCgjbSkiLz48L3N2Zz4=&quot;) 50% 50% / 14px 14px no-repeat rgba(0, 0, 0, 0.4); position: absolute; opacity: 1; z-index: 8675309; display: none; cursor: pointer; border: none; border-radius: 12px;"></span></body></html>

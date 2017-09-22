@@ -1,0 +1,23 @@
+Layers and Protocols
+Structuring
+
+1. Application
+	<message>
+		HTTP,FTP,SMTP
+2. Transfer
+	<segment>
+		TCP,UDP,
+
+3. Network
+	<datagram>
+		IP
+
+4. Link
+	<frame>
+		Ethernet Protocol,PPP
+
+5. Physical
+
+Note:	Network Edges ---> All 5 Layers
+		Network Core ---> Router(3,4,5) and Switch (4,5)
+

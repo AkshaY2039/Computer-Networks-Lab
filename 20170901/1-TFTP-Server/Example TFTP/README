@@ -1,0 +1,36 @@
+Copyright (c) 2013 James Northway
+https://jamesnorthway.net/tftp/tftp.html
+
+===EXPERIMENTAL=== Trivial File Transfer Protocol Client and Server
+
+Compiling the executables:
+To make the client and server, use: make
+To make the server only, use: make server
+To make the client only, use: make client
+To delete the server and client binaries, use: make clean
+The output binaries will be 'server' and 'client' in the same directory.
+
+Starting the server:
+Usage: ./server <port number>
+Example: 
+To start the server on port 3333: 
+
+./server 3333
+
+It will go into a standby state waiting for a new connection.
+
+Using the client:
+Usage: ./client <server ip> <port> <filename> <output filename> [get|put]
+
+Example:
+To fetch getthisfile.txt from the directory the server program is in on the 
+server with ip address 192.168.1.100 on port 4444 and download it to the 
+client:
+
+./client 192.168.1.100 4444 getthisfile.txt saveithere.txt get
+
+To upload the file written with get back to the server with the name 
+newfilename.txt:
+
+./client 192.168.1.100 4444 saveithere.txt newfilename.txt put
+

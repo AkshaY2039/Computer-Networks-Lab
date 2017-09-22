@@ -1,0 +1,61 @@
+Script started on Friday 18 August 2017 07:33:41 PM IST
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 gowtham@172.16.2.[C182[1P.2.1827.2.182
+The authenticity of host '172.17.2.182 (172.17.2.182)' can't be established.
+ECDSA key fingerprint is SHA256:kWCIvLVN16drzysxxpYEcXFHjo+QOjCgS4IwCGDKKi0.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '172.17.2.182' (ECDSA) to the list of known hosts.
+gowtham@172.17.2.182's password: 
+Welcome to Linux Mint 18.2 Sonya (GNU/Linux 4.10.0-32-generic x86_64)
+
+ * Documentation:  https://www.linuxmint.com
+]0;gowtham@iammunukutla ~[01;32mgowtham@iammunukutla[00m [01;34m~ $[00m cd D[KDesktop/
+]0;gowtham@iammunukutla ~/Desktop[01;32mgowtham@iammunukutla[00m [01;34m~/Desktop $[00m ls
+[0m[01;34mALU[0m  [01;34mFlacStream[0m  [01;34mNoor[0m  [01;34mOSLab[0m  [01;34mRandomGo[0m  scb.pdf  [01;34mssh[0m  sudhir 1.odt  wireshark.odt
+]0;gowtham@iammunukutla ~/Desktop[01;32mgowtham@iammunukutla[00m [01;34m~/Desktop $[00m cd ssg[Kh
+]0;gowtham@iammunukutla ~/Desktop/ssh[01;32mgowtham@iammunukutla[00m [01;34m~/Desktop/ssh $[00m ls
+]0;gowtham@iammunukutla ~/Desktop/ssh[01;32mgowtham@iammunukutla[00m [01;34m~/Desktop/ssh $[00m scp ~/Down/home/gowtham/Downloads/[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Ksc[K[Kxdg-open .
+Unescaped left brace in regex is deprecated, passed through in regex; marked by <-- HERE in m/%{ <-- HERE (.*?)}/ at /usr/bin/run-mailcap line 528.
+Error: no "view" rule for type "inode/directory" passed its test case
+       (for more information, add "--debug=1" on the command line)
+/usr/bin/xdg-open: 771: /usr/bin/xdg-open: www-browser: not found
+/usr/bin/xdg-open: 771: /usr/bin/xdg-open: links2: not found
+/usr/bin/xdg-open: 771: /usr/bin/xdg-open: elinks: not found
+/usr/bin/xdg-open: 771: /usr/bin/xdg-open: links: not found
+/usr/bin/xdg-open: 771: /usr/bin/xdg-open: lynx: not found
+/usr/bin/xdg-open: 771: /usr/bin/xdg-open: w3m: not found
+xdg-open: no method available for opening '.'
+]0;gowtham@iammunukutla ~/Desktop/ssh[01;32mgowtham@iammunukutla[00m [01;34m~/Desktop/ssh $[00m xdg-open .[C[K[K[K[K[K[K[K[K[K[Kcl[K[Kexit
+logout
+Connection to 172.17.2.182 closed.
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m scp ~/Dow/home/akshay/Downloads/422[K[K522319-flat-wallpaper.jpg gowtham@172.17.2.182:/home/gowtham/Desktop/
+gowtham@172.17.2.182's password: 
+4522319-flat-wallpaper.jpg                                                                                                              0%    0     0.0KB/s   --:-- ETA4522319-flat-wallpaper.jpg                                                                                                            100%  748KB 748.4KB/s   00:00    
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m scp /home/akshay/Downloads/4522319-flat-wallpaper.jpg gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/b gowtham@172.17.2.182:/home/gowtham/Desktop/i gowtham@172.17.2.182:/home/gowtham/Desktop/g gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/[1P gowtham@172.17.2.182:/home/gowtham/Desktop/R gowtham@172.17.2.182:/home/gowtham/Desktop/e gowtham@172.17.2.182:/home/gowtham/Desktop/l gowtham@172.17.2.182:/home/gowtham/Desktop/ax\ time\ in\ Bali_Ultra\ HD.jpg  gowtham@172.17.2.182:/home/gowtham/Desktop/[C[C[1Powtham@172.17.2.182:/home/gowtham/Desktop/[1Pwtham@172.17.2.182:/home/gowtham/Desktop/[1Ptham@172.17.2.182:/home/gowtham/Desktop/[1Pham@172.17.2.182:/home/gowtham/Desktop/[1Pam@172.17.2.182:/home/gowtham/Desktop/[1Pm@172.17.2.182:/home/gowtham/Desktop/[1P@172.17.2.182:/home/gowtham/Desktop/n@172.17.2.182:/home/gowtham/Desktop/a@172.17.2.182:/home/gowtham/Desktop/y@172.17.2.182:/home/gowtham/Desktop/a@172.17.2.182:/home/gowtham/Desktop/n@172.17.2.182:/home/gowtham/Desktop/[C[C[C[C[C[C[1P.2.182:/home/gowtham/Desktop/6.2.182:/home/gowtham/Desktop/[C[C[1P.182:/home/gowtham/Desktop/1.182:/home/gowtham/Desktop/4.182:/home/gowtham/Desktop/[C[C[C[C[1P:/home/gowtham/Desktop/[1P:/home/gowtham/Desktop/[1P:/home/gowtham/Desktop/2:/home/gowtham/Desktop/3:/home/gowtham/Desktop/[C[C[C[C[C[C[C[1Powtham/Desktop/[1Pwtham/Desktop/[1Ptham/Desktop/[1Pham/Desktop/[1Pam/Desktop/[1Pm/Desktop/[1P/Desktop/n/Desktop/a/Desktop/y/Desktop/a/Desktop/n/Desktop/
+^C]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 nayan [K@172.16.14.23
+^C
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 nayan@172.16.14.23cp /home/akshay/Downloads/Relax\ time\ in\ Bali_Ultra\ HD.jpg  nayan@172.16.14.23:/home/nayan/Desktop/[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Csh -p 22 nayan@172.16.14.23[K
+^C
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 nayan@172.16.14.23
+^C
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 nayan@172.16.14.23cp /home/akshay/Downloads/Relax\ time\ in\ Bali_Ultra\ HD.jpg  nayan@172.16.14.23:/home/nayan/Desktop/[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[6P4522319-flat-wallpaper.jpg gowtham@172.17.2.182:/home/gowtham/Desktop/[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Csh -p 22 gowtham@172.17.2.182[Kexit[Kssh -p 22 gowtham@172.17.2.182
+gowtham@172.17.2.182's password: 
+Welcome to Linux Mint 18.2 Sonya (GNU/Linux 4.10.0-32-generic x86_64)
+
+ * Documentation:  https://www.linuxmint.com
+Last login: Fri Aug 18 14:08:12 2017 from 172.16.7.48
+]0;gowtham@iammunukutla ~[01;32mgowtham@iammunukutla[00m [01;34m~ $[00m cd Ds[K[K[K[K[K^C
+]0;gowtham@iammunukutla ~[01;32mgowtham@iammunukutla[00m [01;34m~ $[00m exit
+logout
+Connection to 172.17.2.182 closed.
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 gowtham@172.17.2.182[2Pnayan@172.16.14.23cp /home/akshay/Downloads/Relax\ time\ in\ Bali_Ultra\ HD.jpg  nayan@172.16.14.23:/home/nayan/Desktop/[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Csh -p 22 nayan@172.16.14.23[K
+^C
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m ssh -p 22 nayan@172.16.14.23
+^C
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m sudo !!
+sudo ssh -p 22 nayan@172.16.14.23
+[sudo] password for akshay: 
+^C
+]0;akshay@Kumar ~/Desktop/SEM5LAB/CN-P/20170811[01;32makshay@Kumar[00m [01;34m~/Desktop/SEM5LAB/CN-P/20170811 $[00m sudo ssh -p 22 nayan@172.16.14.23[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kexit
+exit
+
+Script done on Friday 18 August 2017 07:44:07 PM IST
