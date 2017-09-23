@@ -102,7 +102,9 @@ int main(int argc, char *argv[])
 				{
 					recv(network_socket, rcvbuff, BUFFER_LENGTH, 0);
 					if(strcmp(rcvbuff,"755ELIST") == 0)
+					{
 						break;
+					}
 					else
 						str_print(rcvbuff);
 				}
@@ -213,11 +215,11 @@ int main(int argc, char *argv[])
 			if(strcmp(rcvbuff,"555UNSP") == 0)
 			{
 				printf("Command Unsupported hence Rejected : %s...\n", rcvbuff);
-				RCV_BUFF_CLEAN
+				/*RCV_BUFF_CLEAN
 				recv(network_socket, rcvbuff, BUFFER_LENGTH, 0);
 				if(strcmp(rcvbuff, "100END") == 0)
 					printf("Server disconnected You\n");
-				exit(0);
+				exit(0);*/
 			}
 	}		
 	close(network_socket);

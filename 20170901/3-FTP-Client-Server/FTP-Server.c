@@ -31,15 +31,15 @@ char *base_directory;
 void str_print(char a[]) /*to print a string in a defined way*/
 {
 	int i=0;
-	while(a[i] != '\0') /*until the */
+	while(a[i] != '\0') /*until the current character is NULL character...*/
 	{
-		if(a[i] == '\n')
-			printf("\t");
+		if(a[i] == '\n') /*if the character is a new line...*/
+			printf("\t"); /*print a TAB instead of it*/
 		else
-			printf("%c", a[i]);
-		i++;
+			printf("%c", a[i]); /*else print the character*/
+		i++; /**/
 	}
-	printf("\n");
+	printf("\n"); /**/
 }
 
 int main(int argc, char *argv[])
@@ -122,15 +122,15 @@ int main(int argc, char *argv[])
 					sleep(TIMEOUT);
 					char command[20];
 					sprintf(file_name, "%d.txt", getpid());
-					sprintf(command, "ls > %s", file_name);
-					system(command); /*output of ls into list.txt*/
+					sprintf(command, "ls > %s", file_name); /*since only files are supported here server provides the list of files only*/
+					system(command); /*running that system command copied above*/
 					FILE* file_desc;
 					file_desc = fopen(file_name,"r");
 					printf("Packets to Client : \n");
 					SND_BUFF_CLEAN
 					while(fgets(sndbuff, BUFFER_LENGTH, file_desc) > 0) /*read the content of list.txt into buffer*/
 					{
-						if(strncmp(sndbuff,file_name,8) != 0)
+						if(strcmp(sndbuff,file_name) != 10)
 						{
 							send(client_sock, sndbuff, BUFFER_LENGTH, 0); /*send the contents of buffer to client*/
 							str_print(sndbuff);
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 							else
 							{
 								printf("Packets to Client : \n");
-								printf("Sending : 777BEGIN\n"); /*for client to know start of file*/
+								printf("Sending : 777BEGIN\n\n"); /*for client to know start of file*/
 								SND_BUFF_CLEAN
 								strcpy(sndbuff,"777BEGIN");
 								send(client_sock, sndbuff, BUFFER_LENGTH, 0);
@@ -250,12 +250,12 @@ int main(int argc, char *argv[])
 								strcpy(sndbuff,"555UNSP");
 								send(client_sock, sndbuff, BUFFER_LENGTH, 0);
 								sleep(TIMEOUT);
-								SND_BUFF_CLEAN
+								/*SND_BUFF_CLEAN
 								strcpy(sndbuff,"100END");
 								send(client_sock, sndbuff, BUFFER_LENGTH, 0);
 								sleep(TIMEOUT);
 								connection_flag=2;
-								break;
+								break;*/
 							}
 			}
 			printf("Connection to %s : %u : closed", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
@@ -264,9 +264,8 @@ int main(int argc, char *argv[])
 			{
 				case 1:	printf(" from Client\n");
 						break;
-				case 2:	printf(" by Server\n");
-						break;
-				default:printf(" Client Crashed\n");
+				/*case 2:	printf(" by Server\n");
+						break;*/
 			}
 			exit(0);
 		}
