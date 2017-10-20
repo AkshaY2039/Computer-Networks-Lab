@@ -1,0 +1,22 @@
+http://technobytz.com/how-to-install-network-simulator-ns2-nam-in-ubuntu-14-04.html
+
+The upcoming exercise of Computer Networking practices will be based on Network Simulator-2.
+
+Have a look at the following pages in support of your lab exercise:
+
+http://www.isi.edu/nsnam/ns - the official ns homepage 
+https://www.isi.edu/nsnam/ns/ns-build.html
+https://www.isi.edu/nsnam/ns/doc/ns_doc.pdf
+https://www.isi.edu/nsnam/ns/ns-documentation.html-documentation - ns manual 
+https://www.nsnam.org/-the official ns-3 homepage 
+https://www.nsnam.org/docs/release/3.26/tutorial/ns-3-tutorial.pdf-documentation - ns-3 manual 
+
+References:
+
+http://tetcos.com/index.html
+https://software.microfocus.com/en-us/software/network-virtualization
+http://www.csse.uwa.edu.au/cnet/
+https://www.synopsys.com/optical-solutions.htmlhttp://griley.ece.gatech.edu/MANIACS/GTNetS/
+https://omnetpp.org/
+http://web.scalable-networks.com/
+
