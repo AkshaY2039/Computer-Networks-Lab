@@ -70,18 +70,29 @@
 # Set Queue Size of link (Router-Receiver)
 	$net_sim queue-limit $Router $Receiver $quelim;		# quelimit at Router for packets towards Receiver is set to quelim
 
-# Setting TCP Agent Parameters
-	Agent/TCP set bugFix_ true;
-	Agent/TCP set bugFix_ack_ true;		# To fix bugs in ACK
-	Agent/TCP set bugFix_ts_ true;		# To fix the bugs of Transport Segment
-	Agent/TCP set ts_resetRTO_ true;	# To learn and reset the RTO for Transport Segment
+# Attaching a loss block 1
+	set loss_block1 [new ErrorModel];
+	$loss_block1 unit pkt;
+	$net_sim at [expr $start_transmit1 + 0.051] "$loss_block1 set rate_ 0.5";	# Error rate in fractions
+	$loss_block1 ranvar [new RandomVariable/Uniform];
+	$loss_block1 drop-target [new Agent/Null];
+	$net_sim link-lossmodel $loss_block1 $Sender1 $Router
 
+# Attaching a loss block 2
+	set loss_block2 [new ErrorModel];
+	$loss_block2 unit pkt;
+	$net_sim at [expr $start_transmit3 + 0.051] "$loss_block2 set rate_ 0.5";	# Error rate in fractions
+	$loss_block2 ranvar [new RandomVariable/Uniform];
+	$loss_block2 drop-target [new Agent/Null];
+	$net_sim link-lossmodel $loss_block2 $Sender3 $Router
+	
 # Create a TCP agent and attach to Sender1 as tcp1 and its sink port on the Receiver
 	set tcp1 [new Agent/TCP]
 	$tcp1 set fid_ 1;			# Seperate flow IDs for identification and colors
 	$net_sim attach-agent $Sender1 $tcp1
 	set sink1 [new Agent/TCPSink];		# Seperate Sinks are needed else only the last connection will be maintained (acts like seperate ports on Receiver side)
 	$net_sim attach-agent $Receiver $sink1
+	$tcp1 set ts_resetRTO_ false;		# To not reset the RTO for Transport Segment
 # Create a TCP agent and attach to Sender2 as tcp2
 	set tcp2 [new Agent/TCP]
 	$tcp2 set fid_ 2
@@ -94,6 +105,7 @@
 	$net_sim attach-agent $Sender3 $tcp3
 	set sink3 [new Agent/TCPSink]
 	$net_sim attach-agent $Receiver $sink3
+	$tcp3 set ts_resetRTO_ true;		# To learn and reset the RTO for Transport Segment
 # Create a TCP agent and attach to Sender4 as tcp4
 	set tcp4 [new Agent/TCP]
 	$tcp4 set fid_ 4
