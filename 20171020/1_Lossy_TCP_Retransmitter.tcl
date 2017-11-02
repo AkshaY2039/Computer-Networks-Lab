@@ -14,7 +14,7 @@
 	set quelim 2;				# Queue Limit for the router in between
 	set Snd_Rtr_BW 1Mb;			# Bandwidth for the Senders to Router links
 	set Rtr_Rcvr_BW 1Mb;		# Bandwidth for the Router to Receiver link
-	set Snd_Rtr_Delay 50ms;		# Delay from Sender to Router links
+	set Snd_Rtr_Delay 50ms;		# Delay from Sender to Router links (Note: if changing here... also change in line number 68 & 76)
 	set Rtr_Rcvr_Delay 20ms;	# Delay from Router to Receiver link
 	set QuePosPi 1.0;			# Position of Queue in terms of Pi with Respect to the link orientation
 
