@@ -9,7 +9,7 @@ set nf [open 1_Simple.nam w]
 $ns namtrace-all $nf
 
 # Define a 'ends_simulation' procedure
-proc ends_simulation {} {	
+proc ends_simulation {} {
 	global ns nf
 	$ns flush-trace
 	# Close the trace file
@@ -24,7 +24,7 @@ set NodeA [$ns node]
 set NodeB [$ns node]
 
 # Create a simplex link between the NodeA and NodeB
-$ns simplex-link $NodeA $NodeB 1Mb 10ms DropTail
+$ns simplex-link $NodeA $NodeB 1Mb 100ms DropTail
 
 # Give positon of node for NAM
 $ns simplex-link-op $NodeA $NodeB orient right
@@ -36,7 +36,7 @@ $ns attach-agent $NodeA $Sender
 # Create a CBR traffic source and attach to Sender
 set cbr [new Application/Traffic/CBR]
 $cbr set packetSize_ 1000
-$cbr set interval_ 0.005
+$cbr set interval_ 0.05
 $cbr attach-agent $Sender
 
 # Setup a Null agent and attach to NodeB

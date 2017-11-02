@@ -7,6 +7,18 @@
 # reflecting the actual network state. Using the NS simulation, implement the enhancement in logic
 # for​ ​ this​ ​ rule​ ​ and​ ​ justify​ ​ your​ ​ implementation.
 
+# Declaring variables for use
+set start_transmit1 0.1
+set start_transmit2 0.1
+set start_transmit3 0.1
+set start_transmit4 0.1
+set stop_transmit 19.5
+set quelim 4
+set Snd_Rtr_BW 1Mb
+set Rtr_Rcvr_BW 2Mb
+set Snd_Rtr_Delay 50ms
+set Rtr_Rcvr_Delay 20ms
+
 # Create a simulator object
 set ns [new Simulator]
 
@@ -40,11 +52,11 @@ set Router [$ns node]
 set Receiver [$ns node]
 
 # Create a duplex link between the Sender(s) -- Router -- Receiver because TCP needs duplex
-$ns duplex-link $Sender1 $Router 1Mb 100ms DropTail
-$ns duplex-link $Sender2 $Router 1Mb 100ms DropTail
-$ns duplex-link $Sender3 $Router 1Mb 100ms DropTail
-$ns duplex-link $Sender4 $Router 1Mb 100ms DropTail
-$ns duplex-link $Router $Receiver 1Mb 20ms DropTail
+$ns duplex-link $Sender1 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+$ns duplex-link $Sender2 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+$ns duplex-link $Sender3 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+$ns duplex-link $Sender4 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+$ns duplex-link $Router $Receiver $Rtr_Rcvr_BW $Rtr_Rcvr_Delay DropTail
 
 # Give positon of node for NAM
 $ns duplex-link-op $Sender1 $Router orient right
@@ -57,7 +69,7 @@ $ns duplex-link-op $Router $Receiver orient down
 $ns duplex-link-op $Router $Receiver queuePos 1.0
 
 # Set Queue Size of link (Router-Receiver)
-$ns queue-limit $Router $Receiver 2
+$ns queue-limit $Router $Receiver $quelim
 
 # Create a TCP agent and attach to Sender1 as tcp1
 set tcp1 [new Agent/TCP]
@@ -72,7 +84,7 @@ $tcp1 set class_ 1
 $tcp1 set fid_ 1
 $ns attach-agent $Sender1 $tcp1
 
-# Create a TCP agent and attach to Sender3 as tcp3
+# Create a TCP agent and attach to Sender 2,3,4 as tcp 2,3,4
 set tcp3 [new Agent/TCP]
 $tcp3 set bugFix_ true
 $tcp3 set bugFix_ack_ true
@@ -81,22 +93,19 @@ $tcp3 set ts_resetRTO_ true
 $tcp3 set class_ 3
 $tcp3 set fid_ 3
 $ns attach-agent $Sender3 $tcp3
-
-
-# Creating TCP over other 2 Lossy links
 set tcp2 [new Agent/TCP]
-$tcp3 set bugFix_ false
-$tcp3 set bugFix_ack_ false
-$tcp3 set bugFix_ts_ false
-$tcp3 set ts_resetRTO_ false
+$tcp3 set bugFix_ true
+$tcp3 set bugFix_ack_ true
+$tcp3 set bugFix_ts_ true
+$tcp3 set ts_resetRTO_ true
 $tcp2 set class_ 2
 $tcp2 set fid_ 2
 $ns attach-agent $Sender2 $tcp2
 set tcp4 [new Agent/TCP]
-$tcp3 set bugFix_ false
-$tcp3 set bugFix_ack_ false
-$tcp3 set bugFix_ts_ false
-$tcp3 set ts_resetRTO_ false
+$tcp3 set bugFix_ true
+$tcp3 set bugFix_ack_ true
+$tcp3 set bugFix_ts_ true
+$tcp3 set ts_resetRTO_ true
 $tcp4 set class_ 4
 $tcp4 set fid_ 4
 $ns attach-agent $Sender4 $tcp4
@@ -132,17 +141,17 @@ $ftp4 attach-agent $tcp4
 $ftp4 set type_ FTP
 
 # Schedule events for the FTP agents
-$ns at 0.1 "$ftp1 start"
-$ns at 0.1 "$ftp2 start"
-$ns at 0.1 "$ftp3 start"
-$ns at 0.1 "$ftp4 start"
-$ns at 19.5 "$ftp1 stop"
-$ns at 19.5 "$ftp2 stop"
-$ns at 19.5 "$ftp3 stop"
-$ns at 19.5 "$ftp4 stop"
+$ns at $start_transmit1 "$ftp1 start"
+$ns at $start_transmit2 "$ftp2 start"
+$ns at $start_transmit3 "$ftp3 start"
+$ns at $start_transmit4 "$ftp4 start"
+$ns at $stop_transmit "$ftp1 stop"
+$ns at $stop_transmit "$ftp2 stop"
+$ns at $stop_transmit "$ftp3 stop"
+$ns at $stop_transmit "$ftp4 stop"
 
 # Call the finish procedure afetr 5sec of Simulation
-$ns at 20.0 "finish"
+$ns at [expr $stop_transmit + 0.5] "finish"
 
 #Run the simulation
 $ns run
