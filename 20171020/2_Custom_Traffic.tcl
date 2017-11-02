@@ -8,10 +8,8 @@
 
 # Declaring variables
 	set EndTransmit 7;			# length of traced simulation (s)
-	set QueLim 500;				# QueLimit for wherever used
 	set Incoming "2_in.cvec";	# Connection Vector file for Incoming Link
 	set Outgoing "2_out.cvec";	# Connection Vector file for Outgoing Link
-	set QuePosPi 0.5;			# Position of Queue in terms of Pi with Respect to the link orientation
 
 # Setup Simulator object
 	remove-all-packet-headers;	# removes all packet headers
@@ -62,25 +60,6 @@
 	$net_sim duplex-link-op $tmixNet(0) $tmixNet(1) orient right
 	$net_sim duplex-link-op $tmixNet(1) $n(1) orient right-up
 	$net_sim duplex-link-op $tmixNet(1) $n(3) orient right-down
-
-# set queue buffer sizes (in packets) (default is 20 packets)
-	$net_sim queue-limit $n(0) $tmixNet(0) $QueLim
-	$net_sim queue-limit $tmixNet(0) $n(0) $QueLim
-	$net_sim queue-limit $n(2) $tmixNet(0) $QueLim
-	$net_sim queue-limit $tmixNet(0) $n(2) $QueLim
-	$net_sim queue-limit $tmixNet(0) $tmixNet(1) $QueLim
-	$net_sim queue-limit $tmixNet(1) $tmixNet(0) $QueLim
-	$net_sim queue-limit $tmixNet(1) $n(1) $QueLim
-	$net_sim queue-limit $n(1) $tmixNet(1) $QueLim
-	$net_sim queue-limit $tmixNet(1) $n(3) $QueLim
-	$net_sim queue-limit $n(3) $tmixNet(1) $QueLim
-
-# Monitor the queue for link (Router-Receiver) (for NAM)
-	$net_sim duplex-link-op $n(0) $tmixNet(0) queuePos $QuePosPi;		# the queue is shown in QuePosPi times Pi with the orientation of given link
-	$net_sim duplex-link-op $n(2) $tmixNet(0) queuePos $QuePosPi;
-	$net_sim duplex-link-op $tmixNet(0) $tmixNet(1) queuePos $QuePosPi;
-	$net_sim duplex-link-op $tmixNet(1) $n(1) queuePos $QuePosPi;
-	$net_sim duplex-link-op $tmixNet(1) $n(3) queuePos $QuePosPi;
 
 # Setting up TCP Agent
 	Agent/TCP/FullTcp set segsize_ 1200;	# set MSS to 1200 bytes
