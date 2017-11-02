@@ -31,8 +31,8 @@
 	set nam_file [open 1_Lossy_TCP_Retransmitter.nam w]; 	# a new file pointer for nam trace
 	$net_sim namtrace-all $nam_file;						# record the trace in the associated file with nam_file pointer
 
-# Define a 'finish' procedure
-	proc finish {} {
+# Define a 'Record_n_Play' procedure
+	proc Record_n_Play {} {
 		global net_sim nam_file
 		$net_sim flush-trace;						# write all trace records
 		close $nam_file;							# Close the trace file
@@ -109,8 +109,8 @@
 	$net_sim at $stop_transmit "$ftp1 stop"
 	$net_sim at $stop_transmit "$ftp2 stop"
 
-# Call the finish procedure af 500ms of Stop transmit
-	$net_sim at [expr $stop_transmit + 0.5] "finish"
+# Call the Record_n_Play procedure af 500ms of Stop transmit
+	$net_sim at [expr $stop_transmit + 0.5] "Record_n_Play"
 
 # Run the simulation object
 	$net_sim run
