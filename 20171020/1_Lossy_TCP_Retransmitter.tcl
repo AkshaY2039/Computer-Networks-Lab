@@ -8,150 +8,127 @@
 # for​ ​ this​ ​ rule​ ​ and​ ​ justify​ ​ your​ ​ implementation.
 
 # Declaring variables for use
-set start_transmit1 0.1
-set start_transmit2 0.1
-set start_transmit3 0.1
-set start_transmit4 0.1
-set stop_transmit 19.5
-set quelim 4
-set Snd_Rtr_BW 1Mb
-set Rtr_Rcvr_BW 2Mb
-set Snd_Rtr_Delay 50ms
-set Rtr_Rcvr_Delay 20ms
+	set start_transmit1 0.1;	# Time to start transmit for FTP Application1
+	set start_transmit2 0.1;	# Time to start transmit for FTP Application2
+	set start_transmit3 0.1;	# Time to start transmit for FTP Application3
+	set start_transmit4 0.1;	# Time to start transmit for FTP Application4
+	set stop_transmit 19.5;		# Time to stop transmit for all FTP Applications
+	set quelim 4;				# Queue Limit for the router in between
+	set Snd_Rtr_BW 1Mb;			# Bandwidth for the Senders to Router links
+	set Rtr_Rcvr_BW 2Mb;		# Bandwidth for the Router to Receiver link
+	set Snd_Rtr_Delay 50ms;		# Delay from Sender to Router links
+	set Rtr_Rcvr_Delay 20ms;	# Delay from Router to Receiver link
+	set QuePosPi 1.0;			# Position of Queue in terms of Pi with Respect to the link orientation
 
 # Create a simulator object
-set ns [new Simulator]
+	set net_sim [new Simulator];	# A new object name net_sim for class Simulator
 
 # Define color for data flows (for NAM)
-$ns color 1 Blue
-$ns color 2 Magenta
-$ns color 3 Red
-$ns color 4 Green
+	$net_sim color 1 Blue;		# Color Blue for data from the Agents with flow_id set as 1
+	$net_sim color 2 Magenta;	# Color Magenta for data from the Agents with flow_id set as 2
+	$net_sim color 3 Red;		# Color Red for data from the Agents with flow_id set as 3
+	$net_sim color 4 Green;		# Color Green for data from the Agents with flow_id set as 4
 
 # Open the nam trace file
-set nf [open 1_Lossy_TCP_Retransmitter.nam w]
-$ns namtrace-all $nf
+	set nam_file [open 1_Lossy_TCP_Retransmitter.nam w]; 	# a new file pointer for nam trace
+	$net_sim namtrace-all $nam_file;						# record the trace in the associated file with nam_file pointer
 
 # Define a 'finish' procedure
-proc finish {} {
-	global ns nf
-	$ns flush-trace
-	# Close the trace file
-	close $nf
-	# Execute nam on the trace file
-	exec nam 1_Lossy_TCP_Retransmitter.nam &
-	exit 0
-}
+	proc finish {} {
+		global net_sim nam_file
+		$net_sim flush-trace;						# write all trace records
+		close $nam_file;							# Close the trace file
+		exec nam 1_Lossy_TCP_Retransmitter.nam &;	# Execute nam on the trace file
+		exit 0;										# exit
+	}
 
-# Create two nodes
-set Sender1 [$ns node]
-set Sender2 [$ns node]
-set Sender3 [$ns node]
-set Sender4 [$ns node]
-set Router [$ns node]
-set Receiver [$ns node]
+# Creating nodes
+	set Sender1 [$net_sim node];	# 1st Sender node under the net_sim object
+	set Sender2 [$net_sim node];	# 2nd Sender node under the net_sim object
+	set Sender3 [$net_sim node];	# 3rd Sender node under the net_sim object
+	set Sender4 [$net_sim node];	# 4th Sender node under the net_sim object
+	set Router [$net_sim node];		# Router node under the net_sim object
+	set Receiver [$net_sim node];	# Receiver node under the net_sim object
 
 # Create a duplex link between the Sender(s) -- Router -- Receiver because TCP needs duplex
-$ns duplex-link $Sender1 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
-$ns duplex-link $Sender2 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
-$ns duplex-link $Sender3 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
-$ns duplex-link $Sender4 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
-$ns duplex-link $Router $Receiver $Rtr_Rcvr_BW $Rtr_Rcvr_Delay DropTail
+	$net_sim duplex-link $Sender1 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+	$net_sim duplex-link $Sender2 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+	$net_sim duplex-link $Sender3 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+	$net_sim duplex-link $Sender4 $Router $Snd_Rtr_BW $Snd_Rtr_Delay DropTail
+	$net_sim duplex-link $Router $Receiver $Rtr_Rcvr_BW $Rtr_Rcvr_Delay DropTail
 
 # Give positon of node for NAM
-$ns duplex-link-op $Sender1 $Router orient right
-$ns duplex-link-op $Sender2 $Router orient right-down
-$ns duplex-link-op $Sender3 $Router orient left-down
-$ns duplex-link-op $Sender4 $Router orient left
-$ns duplex-link-op $Router $Receiver orient down
+	$net_sim duplex-link-op $Sender1 $Router orient right;		# so that Router appears to the Right of Sender1 in NAM
+	$net_sim duplex-link-op $Sender2 $Router orient right-down;	# so that Router appears to the Right-Down of Sender2 in NAM
+	$net_sim duplex-link-op $Sender3 $Router orient left-down;	# so that Router appears to the Left-down of Sender3 in NAM
+	$net_sim duplex-link-op $Sender4 $Router orient left;		# so that Router appears to the Left of Sender4 in NAM
+	$net_sim duplex-link-op $Router $Receiver orient down;		# so that Receiver appears to the Down of Router in NAM
 
 # Monitor the queue for link (Router-Receiver) (for NAM)
-$ns duplex-link-op $Router $Receiver queuePos 1.0
+	$net_sim duplex-link-op $Router $Receiver queuePos $QuePosPi;		# the queue is shown in QuePosPi times Pi with the orientation of given link
 
 # Set Queue Size of link (Router-Receiver)
-$ns queue-limit $Router $Receiver $quelim
+	$net_sim queue-limit $Router $Receiver $quelim;		# quelimit at Router for packets towards Receiver is set to quelim
 
-# Create a TCP agent and attach to Sender1 as tcp1
-set tcp1 [new Agent/TCP]
-$tcp1 set bugFix_ true
-# To fix bugs in ACK
-$tcp1 set bugFix_ack_ true
-# To fix the bugs of Transport Segment
-$tcp1 set bugFix_ts_ true
-# To learn and reset the RTO for Transport Segment
-$tcp1 set ts_resetRTO_ true
-$tcp1 set class_ 1
-$tcp1 set fid_ 1
-$ns attach-agent $Sender1 $tcp1
+# Setting TCP Agent Parameters
+	Agent/TCP set bugFix_ true;
+	Agent/TCP set bugFix_ack_ true;		# To fix bugs in ACK
+	Agent/TCP set bugFix_ts_ true;		# To fix the bugs of Transport Segment
+	Agent/TCP set ts_resetRTO_ true;	# To learn and reset the RTO for Transport Segment
 
-# Create a TCP agent and attach to Sender 2,3,4 as tcp 2,3,4
-set tcp3 [new Agent/TCP]
-$tcp3 set bugFix_ true
-$tcp3 set bugFix_ack_ true
-$tcp3 set bugFix_ts_ true
-$tcp3 set ts_resetRTO_ true
-$tcp3 set class_ 3
-$tcp3 set fid_ 3
-$ns attach-agent $Sender3 $tcp3
-set tcp2 [new Agent/TCP]
-$tcp3 set bugFix_ true
-$tcp3 set bugFix_ack_ true
-$tcp3 set bugFix_ts_ true
-$tcp3 set ts_resetRTO_ true
-$tcp2 set class_ 2
-$tcp2 set fid_ 2
-$ns attach-agent $Sender2 $tcp2
-set tcp4 [new Agent/TCP]
-$tcp3 set bugFix_ true
-$tcp3 set bugFix_ack_ true
-$tcp3 set bugFix_ts_ true
-$tcp3 set ts_resetRTO_ true
-$tcp4 set class_ 4
-$tcp4 set fid_ 4
-$ns attach-agent $Sender4 $tcp4
-
-# Create a TCP Sink agent and attach to Receiver as sink s1,2,3,4
-set sink1 [new Agent/TCPSink]
-$ns attach-agent $Receiver $sink1
-set sink2 [new Agent/TCPSink]
-$ns attach-agent $Receiver $sink2
-set sink3 [new Agent/TCPSink]
-$ns attach-agent $Receiver $sink3
-set sink4 [new Agent/TCPSink]
-$ns attach-agent $Receiver $sink4
+# Create a TCP agent and attach to Sender1 as tcp1 and its sink port on the Receiver
+	set tcp1 [new Agent/TCP]
+	$tcp1 set fid_ 1;			# Seperate flow IDs for identification and colors
+	$net_sim attach-agent $Sender1 $tcp1
+	set sink1 [new Agent/TCPSink];		# Seperate Sinks are needed else only the last connection will be maintained (acts like seperate ports on Receiver side)
+	$net_sim attach-agent $Receiver $sink1
+# Create a TCP agent and attach to Sender2 as tcp2
+	set tcp2 [new Agent/TCP]
+	$tcp2 set fid_ 2
+	$net_sim attach-agent $Sender2 $tcp2
+	set sink2 [new Agent/TCPSink]
+	$net_sim attach-agent $Receiver $sink2
+# Create a TCP agent and attach to Sender3 as tcp3
+	set tcp3 [new Agent/TCP]
+	$tcp3 set fid_ 3
+	$net_sim attach-agent $Sender3 $tcp3
+	set sink3 [new Agent/TCPSink]
+	$net_sim attach-agent $Receiver $sink3
+# Create a TCP agent and attach to Sender4 as tcp4
+	set tcp4 [new Agent/TCP]
+	$tcp4 set fid_ 4
+	$net_sim attach-agent $Sender4 $tcp4
+	set sink4 [new Agent/TCPSink]
+	$net_sim attach-agent $Receiver $sink4
 
 # Connect Sender(tcp agent) to Router(tcpsink agent)
-$ns connect $tcp1 $sink1
-$ns connect $tcp2 $sink2
-$ns connect $tcp3 $sink3
-$ns connect $tcp4 $sink4
+	$net_sim connect $tcp1 $sink1
+	$net_sim connect $tcp2 $sink2
+	$net_sim connect $tcp3 $sink3
+	$net_sim connect $tcp4 $sink4
 
-# Setup a FTP application over TCP connection
-set ftp1 [new Application/FTP]
-$ftp1 attach-agent $tcp1
-$ftp1 set type_ FTP
-set ftp2 [new Application/FTP]
-$ftp2 attach-agent $tcp2
-$ftp2 set type_ FTP
-set ftp3 [new Application/FTP]
-$ftp3 attach-agent $tcp3
-$ftp3 set type_ FTP
-set ftp4 [new Application/FTP]
-$ftp4 attach-agent $tcp4
-$ftp4 set type_ FTP
+# Setup a FTP application over all TCP connections
+	set ftp1 [new Application/FTP]
+	$ftp1 attach-agent $tcp1
+	set ftp2 [new Application/FTP]
+	$ftp2 attach-agent $tcp2
+	set ftp3 [new Application/FTP]
+	$ftp3 attach-agent $tcp3
+	set ftp4 [new Application/FTP]
+	$ftp4 attach-agent $tcp4
 
 # Schedule events for the FTP agents
-$ns at $start_transmit1 "$ftp1 start"
-$ns at $start_transmit2 "$ftp2 start"
-$ns at $start_transmit3 "$ftp3 start"
-$ns at $start_transmit4 "$ftp4 start"
-$ns at $stop_transmit "$ftp1 stop"
-$ns at $stop_transmit "$ftp2 stop"
-$ns at $stop_transmit "$ftp3 stop"
-$ns at $stop_transmit "$ftp4 stop"
+	$net_sim at $start_transmit1 "$ftp1 start"
+	$net_sim at $start_transmit2 "$ftp2 start"
+	$net_sim at $start_transmit3 "$ftp3 start"
+	$net_sim at $start_transmit4 "$ftp4 start"
+	$net_sim at $stop_transmit "$ftp1 stop"
+	$net_sim at $stop_transmit "$ftp2 stop"
+	$net_sim at $stop_transmit "$ftp3 stop"
+	$net_sim at $stop_transmit "$ftp4 stop"
 
-# Call the finish procedure afetr 5sec of Simulation
-$ns at [expr $stop_transmit + 0.5] "finish"
+# Call the finish procedure af 500ms of Stop transmit
+	$net_sim at [expr $stop_transmit + 0.5] "finish"
 
-#Run the simulation
-$ns run
+# Run the simulation object
+	$net_sim run

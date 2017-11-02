@@ -6,102 +6,100 @@
 # which the traffic could be “originally learnt”. The traffic simulated should pertain to a MSS size of
 # 1200​ ​ bytes​ ​ and​ ​ also​ ​ disabling​ ​ Nagle’s​ ​ algorithm.
 
-#::::::::::: Useful Variables ::::::::::::::::::::::
-set end 7;
-# length of traced simulation (s)
-set Incoming "2_incoming.cvec"
-set Outgoing "2_incoming.cvec"
-#::::::::::: Setup Simulator ::::::::::::::::::::::
-remove-all-packet-headers;
-# removes all packet headers
-add-packet-header IP TCP;
-# adds TCP/IP headers
-set ns [new Simulator];
+# Declaring variables
+	set EndTransmit 7;			# length of traced simulation (s)
+	set QueLim 20;				# QueLimit for wherever used
+	set Incoming "2_in.cvec";	# Connection Vector file for Incoming Link
+	set Outgoing "2_out.cvec";	# Connection Vector file for Outgoing Link
+
+# Setup Simulator object
+	remove-all-packet-headers;	# removes all packet headers
+	add-packet-header IP TCP;	# adds TCP/IP headers
+	set net_sim [new Simulator];
 
 # Open the nam trace file
-set nf [open 2_Custom_Traffic.nam w]
-$ns namtrace-all $nf
+	set nam_file [open 2_Custom_Traffic.nam w]
+	$net_sim namtrace-all $nam_file
 
 # Define a 'finish' procedure
-proc finish {} {
-	global ns nf
-	$ns flush-trace
-	# Close the trace file
-	close $nf
-	# Execute nam on the trace file
-	exec nam 2_Custom_Traffic.nam &
-	exit 0
-}
+	proc finish {} {
+		global net_sim nam_file
+		$net_sim flush-trace;	# Close the trace file
+		close $nam_file;		# Execute nam on the trace file
+		exec nam 2_Custom_Traffic.nam &
+		exit 0
+	}
 
 # instantiate the Simulator
-$ns use-scheduler Heap
-#::::::::::: Setup Topology ::::::::::::::::::::::
+	$net_sim use-scheduler Heap
+
 # create nodes
-set n(0) [$ns node]
-set n(1) [$ns node]
-set n(2) [$ns node]
-set n(3) [$ns node]
+	set n(0) [$net_sim node]
+	set n(1) [$net_sim node]
+	set n(2) [$net_sim node]
+	set n(3) [$net_sim node]
+
 # create Tmix_DelayBox nodes
-set tmixNet(0) [$ns Tmix_DelayBox]
-$tmixNet(0) set-cvfile "$Incoming" [$n(0) id] [$n(1) id]
-$tmixNet(0) set-lossless
-set tmixNet(1) [$ns Tmix_DelayBox]
-$tmixNet(1) set-cvfile "$Outgoing" [$n(3) id] [$n(2) id]
-$tmixNet(1) set-lossless
+	set tmixNet(0) [$net_sim Tmix_DelayBox]
+	$tmixNet(0) set-cvfile "$Incoming" [$n(0) id] [$n(1) id]
+	$tmixNet(0) set-lossless
+	set tmixNet(1) [$net_sim Tmix_DelayBox]
+	$tmixNet(1) set-cvfile "$Outgoing" [$n(3) id] [$n(2) id]
+	$tmixNet(1) set-lossless
+
 # create links
-$ns duplex-link $n(0) $tmixNet(0) 1000Mb 10ms DropTail
-$ns duplex-link $n(2) $tmixNet(0) 1000Mb 10ms DropTail
-$ns duplex-link $tmixNet(0) $tmixNet(1) 1000Mb 10ms DropTail
-$ns duplex-link $tmixNet(1) $n(1) 1000Mb 10ms DropTail
-$ns duplex-link $tmixNet(1) $n(3) 1000Mb 10ms DropTail
+	$net_sim duplex-link $n(0) $tmixNet(0) 1Mb 10ms DropTail
+	$net_sim duplex-link $n(2) $tmixNet(0) 1Mb 10ms DropTail
+	$net_sim duplex-link $tmixNet(0) $tmixNet(1) 1Mb 100ms DropTail
+	$net_sim duplex-link $tmixNet(1) $n(1) 1Mb 10ms DropTail
+	$net_sim duplex-link $tmixNet(1) $n(3) 1Mb 10ms DropTail
 
 # orient link positions for NAM
-$ns duplex-link-op $n(0) $tmixNet(0) orient right-down
-$ns duplex-link-op $n(2) $tmixNet(0) orient right-up
-$ns duplex-link-op $tmixNet(0) $tmixNet(1) orient right
-$ns duplex-link-op $tmixNet(1) $n(1) orient right-up
-$ns duplex-link-op $tmixNet(1) $n(3) orient right-down
+	$net_sim duplex-link-op $n(0) $tmixNet(0) orient right-down
+	$net_sim duplex-link-op $n(2) $tmixNet(0) orient right-up
+	$net_sim duplex-link-op $tmixNet(0) $tmixNet(1) orient right
+	$net_sim duplex-link-op $tmixNet(1) $n(1) orient right-up
+	$net_sim duplex-link-op $tmixNet(1) $n(3) orient right-down
 
 # set queue buffer sizes (in packets) (default is 20 packets)
-$ns queue-limit $n(0) $tmixNet(0) 500
-$ns queue-limit $tmixNet(0) $n(0) 500
-$ns queue-limit $n(2) $tmixNet(0) 500
-$ns queue-limit $tmixNet(0) $n(2) 500
-$ns queue-limit $tmixNet(0) $tmixNet(1) 500
-$ns queue-limit $tmixNet(1) $tmixNet(0) 500
-$ns queue-limit $tmixNet(1) $n(1) 500
-$ns queue-limit $n(1) $tmixNet(1) 500
-$ns queue-limit $tmixNet(1) $n(3) 500
-$ns queue-limit $n(3) $tmixNet(1) 500
-#::::::::::: Setup TCP ::::::::::::::::::::::
-Agent/TCP/FullTcp set segsize_ 1200;
-# set MSS to 1200 bytes
-Agent/TCP/FullTcp set nodelay_ true;
-Agent/TCP/FullTcp set segsperack_ 2;
-Agent/TCP/FullTcp set interval_ 0.1;
-# disabling nagle
-# delayed ACKs
-# 100 ms
-#::::::::::: Setup Tmix ::::::::::::::::::::::
-set tmix(0) [new Tmix]
-$tmix(0) set-init $n(0);
-# name $n(0) as initiator
-$tmix(0) set-acc $n(1);
-# name $n(1) as acceptor
-$tmix(0) set-ID 7
-$tmix(0) set-cvfile "$Incoming"
-set tmix(1) [new Tmix]
-$tmix(1) set-init $n(3);
-$tmix(1) set-acc $n(2);
-$tmix(1) set-ID 8
-$tmix(1) set-cvfile "$Outgoing"
-# name $n(3) as initiator
-# name $n(2) as acceptor
-#::::::::::: Setup Schedule ::::::::::::::::::::::
-$ns at 0.0 "$tmix(0) start"
-$ns at 0.0 "$tmix(1) start"
-$ns at $end "$tmix(0) stop"
-$ns at $end "$tmix(1) stop"
-#$ns at [expr $end + 1] "$ns halt"
-$ns at [expr $end + 1] "finish"
-$ns run
+	$net_sim queue-limit $n(0) $tmixNet(0) $QueLim
+	$net_sim queue-limit $tmixNet(0) $n(0) $QueLim
+	$net_sim queue-limit $n(2) $tmixNet(0) $QueLim
+	$net_sim queue-limit $tmixNet(0) $n(2) $QueLim
+	$net_sim queue-limit $tmixNet(0) $tmixNet(1) $QueLim
+	$net_sim queue-limit $tmixNet(1) $tmixNet(0) $QueLim
+	$net_sim queue-limit $tmixNet(1) $n(1) $QueLim
+	$net_sim queue-limit $n(1) $tmixNet(1) $QueLim
+	$net_sim queue-limit $tmixNet(1) $n(3) $QueLim
+	$net_sim queue-limit $n(3) $tmixNet(1) $QueLim
+
+# Setting up TCP Agent
+	Agent/TCP/FullTcp set segsize_ 1200;	# set MSS to 1200 bytes
+	Agent/TCP/FullTcp set nodelay_ true;	# disabling nagle
+	Agent/TCP/FullTcp set segsperack_ 2;	# delayed ACKs
+	Agent/TCP/FullTcp set interval_ 0.1;	# 100 ms
+
+# Setting up TMIX
+	set tmix(0) [new Tmix]
+	$tmix(0) set-init $n(0);	# name $n(0) as initiator
+	$tmix(0) set-acc $n(1);		# name $n(1) as acceptor
+	$tmix(0) set-ID 7
+	$tmix(0) set-cvfile "$Incoming"
+
+	set tmix(1) [new Tmix]
+	$tmix(1) set-init $n(3);	# name $n(3) as initiator
+	$tmix(1) set-acc $n(2);		# name $n(2) as acceptor
+	$tmix(1) set-ID 8
+	$tmix(1) set-cvfile "$Outgoing"
+
+# Schedule the TMIX events
+	$net_sim at 0.0 "$tmix(0) start"
+	$net_sim at 0.0 "$tmix(1) start"
+	$net_sim at $EndTransmit "$tmix(0) stop"
+	$net_sim at $EndTransmit "$tmix(1) stop"
+
+# Call the finish procedure af 500ms of End Transmit
+	$net_sim at [expr $EndTransmit + 0.5] "finish"
+
+# Run the simulation
+	$net_sim run
