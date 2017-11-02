@@ -8,9 +8,10 @@
 
 # Declaring variables
 	set EndTransmit 7;			# length of traced simulation (s)
-	set QueLim 20;				# QueLimit for wherever used
+	set QueLim 500;				# QueLimit for wherever used
 	set Incoming "2_in.cvec";	# Connection Vector file for Incoming Link
 	set Outgoing "2_out.cvec";	# Connection Vector file for Outgoing Link
+	set QuePosPi 0.5;			# Position of Queue in terms of Pi with Respect to the link orientation
 
 # Setup Simulator object
 	remove-all-packet-headers;	# removes all packet headers
@@ -30,27 +31,28 @@
 		exit 0
 	}
 
-# instantiate the Simulator
-	$net_sim use-scheduler Heap
-
 # create nodes
 	set n(0) [$net_sim node]
 	set n(1) [$net_sim node]
 	set n(2) [$net_sim node]
 	set n(3) [$net_sim node]
 
+	$net_sim color 7 Red
+	$net_sim color 8 Blue
+	$net_sim color 5 Green
+
 # create Tmix_DelayBox nodes
 	set tmixNet(0) [$net_sim Tmix_DelayBox]
-	$tmixNet(0) set-cvfile "$Incoming" [$n(0) id] [$n(1) id]
+	$tmixNet(0) set-cvfile "$Incoming" [$n(0) id] [$n(1) id];	# set the Outgoing Connection Vector File between node2 node 2
 	$tmixNet(0) set-lossless
 	set tmixNet(1) [$net_sim Tmix_DelayBox]
-	$tmixNet(1) set-cvfile "$Outgoing" [$n(3) id] [$n(2) id]
+	$tmixNet(1) set-cvfile "$Outgoing" [$n(3) id] [$n(2) id];	# set the Outgoing Connection Vector File between node2 node 2
 	$tmixNet(1) set-lossless
 
 # create links
 	$net_sim duplex-link $n(0) $tmixNet(0) 1Mb 10ms DropTail
 	$net_sim duplex-link $n(2) $tmixNet(0) 1Mb 10ms DropTail
-	$net_sim duplex-link $tmixNet(0) $tmixNet(1) 1Mb 100ms DropTail
+	$net_sim duplex-link $tmixNet(0) $tmixNet(1) 2Mb 100ms DropTail
 	$net_sim duplex-link $tmixNet(1) $n(1) 1Mb 10ms DropTail
 	$net_sim duplex-link $tmixNet(1) $n(3) 1Mb 10ms DropTail
 
@@ -73,11 +75,19 @@
 	$net_sim queue-limit $tmixNet(1) $n(3) $QueLim
 	$net_sim queue-limit $n(3) $tmixNet(1) $QueLim
 
+# Monitor the queue for link (Router-Receiver) (for NAM)
+	$net_sim duplex-link-op $n(0) $tmixNet(0) queuePos $QuePosPi;		# the queue is shown in QuePosPi times Pi with the orientation of given link
+	$net_sim duplex-link-op $n(2) $tmixNet(0) queuePos $QuePosPi;
+	$net_sim duplex-link-op $tmixNet(0) $tmixNet(1) queuePos $QuePosPi;
+	$net_sim duplex-link-op $tmixNet(1) $n(1) queuePos $QuePosPi;
+	$net_sim duplex-link-op $tmixNet(1) $n(3) queuePos $QuePosPi;
+
 # Setting up TCP Agent
 	Agent/TCP/FullTcp set segsize_ 1200;	# set MSS to 1200 bytes
 	Agent/TCP/FullTcp set nodelay_ true;	# disabling nagle
 	Agent/TCP/FullTcp set segsperack_ 2;	# delayed ACKs
 	Agent/TCP/FullTcp set interval_ 0.1;	# 100 ms
+	Agent/TCP/FullTcp set fid_ 5;			# so that TCP segments are identified
 
 # Setting up TMIX
 	set tmix(0) [new Tmix]
