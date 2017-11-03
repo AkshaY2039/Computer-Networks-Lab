@@ -37,7 +37,7 @@
 	set Access_Link_Delay4 [expr { 10 + floor( rand() * 91 )}]ms;		# Delay from AccessHost4 to Router link
 	set BottleNeck_Delay 5ms;		# Delay from Router to FinalDest link
 	set QuePosPi 1.0;				# Position of Queue in terms of Pi with Respect to the link orientation
-	set error_rate [expr {0.001 + rand() * 5}];	# error rate between 0.1% and 5%
+	set error_rate [expr {0.001 + rand() * 0.05}];	# error rate between 0.1% and 5%
 
 # Create a simulator object
 	set net_sim [new Simulator];	# A new object name net_sim for class Simulator
@@ -103,7 +103,7 @@
 	$net_sim at [expr $start_transmit1 + 0.101] "$loss_block1 set rate_ $error_rate";	# Error rate in fractions
 	$loss_block1 ranvar [new RandomVariable/Uniform];
 	$loss_block1 drop-target [new Agent/Null];
-	$net_sim link-lossmodel $loss_block1 $Router $FinalDest
+	$net_sim link-lossmodel $loss_block1 $FinalDest $Router
 
 # Create a TCP agent and attach to AccessHost1 as tcp1 and its sink port on the FinalDest
 	set tcp1 [new Agent/TCP]
