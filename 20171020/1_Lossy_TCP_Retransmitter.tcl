@@ -84,7 +84,7 @@
 	$net_sim attach-agent $Sender1 $tcp1
 	set sink1 [new Agent/TCPSink];		# Seperate Sinks are needed else only the last connection will be maintained (acts like seperate ports on Receiver side)
 	$net_sim attach-agent $Receiver $sink1
-	$tcp1 set ts_setRTO false;		# To not reset the RTO for Transport Segment
+	$tcp1 set ts_resetRTO false;		# To not reset the RTO for Transport Segment
 # Create a TCP agent and attach to Sender2 as tcp2
 	set tcp2 [new Agent/TCP]
 	$tcp2 set fid_ 2

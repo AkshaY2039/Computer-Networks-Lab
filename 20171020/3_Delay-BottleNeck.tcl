@@ -37,6 +37,7 @@
 	set Access_Link_Delay4 [expr { 10 + floor( rand() * 91 )}]ms;		# Delay from AccessHost4 to Router link
 	set BottleNeck_Delay 5ms;		# Delay from Router to FinalDest link
 	set QuePosPi 1.0;				# Position of Queue in terms of Pi with Respect to the link orientation
+	set error_rate [expr {0.001 + rand() * 5}];	# error rate between 0.1% and 5%
 
 # Create a simulator object
 	set net_sim [new Simulator];	# A new object name net_sim for class Simulator
@@ -96,11 +97,13 @@
 	$net_sim queue-limit $Router $AccessHost3 $quelim;					# quelimit at Router for packets towards AccessHost3 is set to quelim
 	$net_sim queue-limit $Router $AccessHost4 $quelim;					# quelimit at Router for packets towards AccessHost4 is set to quelim
 
-# Setting TCP Agent Parameters
-	Agent/TCP set bugFix_ true;
-	Agent/TCP set bugFix_ack_ true;		# To fix bugs in ACK
-	Agent/TCP set bugFix_ts_ true;		# To fix the bugs of Transport Segment
-	Agent/TCP set ts_resetRTO_ true;	# To learn and reset the RTO for Transport Segment
+# Attaching a loss block 1
+	set loss_block1 [new ErrorModel];
+	$loss_block1 unit pkt;
+	$net_sim at [expr $start_transmit1 + 0.101] "$loss_block1 set rate_ $error_rate";	# Error rate in fractions
+	$loss_block1 ranvar [new RandomVariable/Uniform];
+	$loss_block1 drop-target [new Agent/Null];
+	$net_sim link-lossmodel $loss_block1 $Router $FinalDest
 
 # Create a TCP agent and attach to AccessHost1 as tcp1 and its sink port on the FinalDest
 	set tcp1 [new Agent/TCP]
@@ -152,6 +155,14 @@
 	$net_sim at $stop_transmit "$ftp2 stop"
 	$net_sim at $stop_transmit "$ftp3 stop"
 	$net_sim at $stop_transmit "$ftp4 stop"
+
+# Output in Terminal
+	# for {set i start_transmit1} {$i < $stop_transmit} {incr $i} {
+	# 	puts "AccessHost1 RTT = [$tcp1 rtt_]";
+	# 	puts "AccessHost2 RTT = [$tcp2 rtt_]";
+	# 	puts "AccessHost3 RTT = [$tcp3 rtt_]";
+	# 	puts "AccessHost4 RTT = [$tcp4 rtt_]";
+	# }
 
 # Call the Record_n_Play procedure af 500ms of Stop transmit
 	$net_sim at [expr $stop_transmit + 0.5] "Record_n_Play"

@@ -71,7 +71,7 @@
 
 # Setting up TMIX
 	set TMIX_APP1 [new Tmix]
-	$TMIX_APP1 set-init $Node0;	# name $Node0 as initiator
+	$TMIX_APP1 set-init $Node0;		# name $Node0 as initiator
 	$TMIX_APP1 set-acc $Node1;		# name $Node1 as acceptor
 	$TMIX_APP1 set-ID 7
 	$TMIX_APP1 set-cvfile "$Incoming"
